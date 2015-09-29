@@ -1,0 +1,292 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+
+    <title>Extending WildFly</title>
+
+    <meta name="description" content="Extending WildFly">
+    <meta name="author" content="James R. Perkins">
+
+    <meta name="apple-mobile-web-app-capable" content="yes"/>
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent"/>
+
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+    <link rel="stylesheet" href="css/reveal.min.css">
+    <link rel="stylesheet" href="css/theme/night.css" id="theme">
+
+    <!-- For syntax highlighting -->
+    <link rel="stylesheet" href="lib/css/zenburn.css">
+
+    <!-- If the query includes 'print-pdf', include the PDF print sheet -->
+    <script>
+        if (window.location.search.match(/print-pdf/gi)) {
+            var link = document.createElement('link');
+            link.rel = 'stylesheet';
+            link.type = 'text/css';
+            link.href = 'css/print/pdf.css';
+            document.getElementsByTagName('head')[0].appendChild(link);
+        }
+    </script>
+
+    <!--[if lt IE 9]>
+    <script src="lib/js/html5shiv.js"></script>
+    <![endif]-->
+</head>
+
+<body>
+
+<div class="reveal">
+
+    <!-- Any section element inside of this container is displayed as a slide -->
+    <div class="slides">
+        <section>
+            <h1>Extending WildFly</h1>
+
+            <p>
+                <small><em>By:</em><br>James R. Perkins &lt;<a href="mailto:jperkins@redhat.com" target="_self">jperkins@redhat.com</a>&gt;
+                </small>
+            </p>
+        </section>
+
+        <section>
+            <h2>What is WildFly?</h2>
+            <ul class="fragment">
+                <li>A certified Java EE 7 container</li>
+                <li class="fragment">An extensible framework</li>
+            </ul>
+            <aside class="notes">
+                <ul>
+                    <li>WildFly is a certified Java EE 7 container.
+                    </li>
+                    <li>WildFly is also a framework which can be extended.
+                    </li>
+                </ul>
+            </aside>
+        </section>
+
+        <section>
+            <h2>Why would you want to extend WildFly?</h2>
+
+            <ul>
+                <li>You may want to add some behavior to your deployments on WildFly</li>
+                <li>You may want to validate a deployments structure</li>
+                <li>You may want to add some behavior to the container</li>
+            </ul>
+            <aside class="notes">
+                
+            </aside>
+        </section>
+
+        <section>
+            <h2>How do you extend WildFly?</h2>
+            <p>
+                You extend WildFly by writing an extension and creating a subsystem.
+            </p>
+        </section>
+
+        <section>
+            <h2>What is an extension?</h2>
+            <p>
+                An extension enhances the capabilities of the WildFly kernel by registering one or more subsystems.
+            </p>
+        </section>
+
+        <section>
+            <h2>Background</h2>
+        </section>
+
+        <section>
+            <h2>Modular Service Container (MSC)</h2>
+            <ul class="fragment">
+                <li>A concurrent service container</li>
+                <li>Handles the service dependences</li>
+                <li>Handles the service lifecycle</li>
+            </ul>
+            <aside class="notes">
+                MSC is a concurrent service container. It handles the lifecycle of services and each services dependencies.
+            </aside>
+        </section>
+
+        <section>
+            <h2>Dynamic Model Representation (DMR)</h2>
+            <p>
+                DMR is a JSON-like detyped API that represents a servers internal model.
+            </p>
+            <aside class="notes">
+                A servers model is represented in a DMR format. DMR is a JSON-like format. Internal operations and the entire servers model are represented in DMR.
+            </aside>
+        </section>
+
+        <section>
+            <h2>Domain Model</h2>
+            <ul>
+                <li>Attributes</li>
+                <li>Resources</li>
+            </ul>
+            <aside class="notes">
+                The domain model is a tree like structure made up of attributes and resources.
+                <p>
+                    Resource can have attributes, child resources and operations. Operations are like commands in that they execute behavior on the domain model.
+                </p>
+            </aside>
+        </section>
+
+        <section>
+            <h2>Operation Step Handlers</h2>
+            <p>Implement behavior for the resource.</p>
+            <ul class="fragment">
+                <li>Execution Stages:
+                    <ul class="fragment">
+                        <li>MODEL</li>
+                        <li>RUNTIME</li>
+                        <li>VERIFY</li>
+                        <li>DOMAIN</li>
+                        <li>DONE</li>
+                    </ul>
+                </li>
+            </ul>
+
+            <aside class="notes">                
+                <ul>
+                    <li>MODEL: The model stage is what updates the domain model.</li>
+                    <li>RUNTIME: The runtime stage is used to update services or runtime behavior for your subsystem.</li>
+                    <li>VERIFY: The step checks the result of a runtime container operation (read only).  Inspect the container, and if problems are detected, record the problem(s) in the operation result.</li>
+                    <li>DOMAIN: Only used in domain mode and performs any actions needed to cause the operation to take effect on the target servers in the domain.</li>
+                    <li>DONE: The operation execution is complete</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section>
+            <h2>Creating an extension</h2>
+            <ol class="fragment">
+                <li>Implement the <code class="java">org.jboss.as.controller.Extension</code> interface</li>
+                <li class="fragment">Create a <code>META-INF/services/org.jboss.as.controller.Extension</code> with the binary name of your class file</li>
+            </ol>
+            <aside class="notes">
+                Implement the Extension interface and set-up a service file for it. That's really all there is to it. Though it's not real useful.
+            </aside>
+        </section>
+
+        <section>
+            <h3><code class="java">org.jboss.as.controller.Extension</code></h3>
+            <pre>
+                <code data-trim class="java">   
+public interface Extension {
+
+    void initialize(ExtensionContext context);
+
+    void initializeParsers(ExtensionParsingContext context);
+}
+                </code>
+            </pre>
+            <aside class="notes">
+                <p>
+                    <b>initialize</b>: This is where you register the subsystem and XML writer for persisting changes to your subsystem.
+                <p>
+                <p>
+                    <b>initializeParsers</b>: Initialize the XML parsers for this extension and register them with the given ExtensionParsingContext.
+                </p>
+            </aside>
+        </section>
+
+        <section>
+            <h1>Making the extension useful.</h1>
+        </section>
+
+        <section>
+            <p>There are a few steps required to create a useful extension.</p>
+            <ul class="fragment">
+                <li>Create an XML schema</li>
+                <li class="fragment">Create a root resource and any child resources</li>
+                <li class="fragment">Create an XML parser</li>
+                <li class="fragment">Create an XML writer</li>
+            </ul>
+            <aside class="notes">
+                <ul>
+                    <li>Create an XML schema which can be persisted to the configuration file</li>
+                    <li>Create a root resource and any child resources required for your extension</li>
+                </ul>
+            </aside>
+        </section>
+
+        <section>
+            <h1>Let's look at some code</h1>
+        </section>
+
+        <section>
+            <h2>References:</h2>
+            <ul>
+                <li><a href="https://docs.jboss.org/author/display/WFLY9/Extending+WildFly">Extending WildFly Documentation</a></li>
+                <li><a href="https://github.com/jamezp/wildfly-examples/tree/master/wildfly-extension">Example Extension</a>
+                </li>
+            </ul>
+        </section>
+
+
+    </div>
+
+</div>
+
+<script src="lib/js/head.min.js"></script>
+<script src="js/reveal.min.js"></script>
+
+<script>
+
+    // Full list of configuration options available here:
+    // https://github.com/hakimel/reveal.js#configuration
+    Reveal.initialize({
+        controls: true,
+        progress: true,
+        history: true,
+        center: true,
+
+        theme: Reveal.getQueryHash().theme, // available themes are in /css/theme
+        transition: Reveal.getQueryHash().transition || 'default', // default/cube/page/concave/zoom/linear/fade/none
+
+        // Parallax scrolling
+        // parallaxBackgroundImage: 'https://s3.amazonaws.com/hakim-static/reveal-js/reveal-parallax-1.jpg',
+        // parallaxBackgroundSize: '2100px 900px',
+
+        // Optional libraries used to extend on reveal.js
+        dependencies: [
+            {
+                src: 'lib/js/classList.js', condition: function () {
+                return !document.body.classList;
+            }
+            },
+            {
+                src: 'plugin/markdown/marked.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            }
+            },
+            {
+                src: 'plugin/markdown/markdown.js', condition: function () {
+                return !!document.querySelector('[data-markdown]');
+            }
+            },
+            {
+                src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+                hljs.initHighlightingOnLoad();
+            }
+            },
+            {
+                src: 'plugin/zoom-js/zoom.js', async: true, condition: function () {
+                return !!document.body.classList;
+            }
+            },
+            {
+                src: 'plugin/notes/notes.js', async: true, condition: function () {
+                return !!document.body.classList;
+            }
+            }
+        ]
+    });
+
+</script>
+
+</body>
+</html>
