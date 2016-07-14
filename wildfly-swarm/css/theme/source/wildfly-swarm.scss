@@ -1,0 +1,70 @@
+/**
+ * Black theme for reveal.js.
+ *
+ * Copyright (C) 2011-2012 Hakim El Hattab, http://hakim.se
+ */
+
+
+// Default mixins and settings -----------------
+@import "../template/mixins";
+@import "../template/settings";
+// ---------------------------------------------
+
+
+// Include theme-specific fonts
+@import url("../../lib/font/overpass/recommended.css");
+
+$wfsDefaultColor: #f7931e;
+
+// Override theme settings (see ../template/settings.scss)
+$backgroundColor: #323232;
+
+$mainColor: #dcdcdc;
+$mainFont: 'Overpass', sans-serif;
+$linkColor: $wfsDefaultColor;
+$linkColorHover: #cc0000;
+$headingColor: $wfsDefaultColor;
+$headingFont: 'Overpass', Impact, sans-serif;
+$headingTextShadow: none;
+$headingLetterSpacing: -0.03em;
+$headingTextTransform: none;
+$selectionBackgroundColor: #1B5564;
+$mainFontSize: 30px;
+
+
+// Theme template ------------------------------
+@import "../template/theme";
+// ---------------------------------------------
+
+.title {
+	background-color: inherit;
+}
+
+.compare td {
+    vertical-align: top;
+    width: 50%;
+}
+
+.compare tr td:first-child {
+    border-right: 1px solid $mainColor;
+}
+
+.reveal section img.plain {
+    background-color: inherit;
+}
+
+div .header {
+    display: none;
+}
+
+div .footer {
+    display: none;
+    border-top: 1px solid $mainColor;
+    position: absolute;
+    width: 100%;
+    bottom: 5px;
+}
+div .footer img {
+    float: right;
+    z-index: 1000;
+}
