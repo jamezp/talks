@@ -31,9 +31,8 @@
         </div>
 
         <div class="slides">
-            <!-- <section data-background-image="images/corporate-2.svg"> -->
             <section class="title">
-                <h1>Microservices with <img class="plain" src="images/swarm_logo_200px.png"/></h1>
+                <h1>Rightsize Your Services with <img class="plain" src="images/swarm_logo_200px.png"/></h1>
                 <p>
                     <small><em>By:</em><br>James R. Perkins &lt;<a href="mailto:jperkins@redhat.com" target="_self">jperkins@redhat.com</a>&gt;</small>
                 </p>
@@ -44,6 +43,8 @@
                     In short, the microservice architectural style is an approach to developing a single application as a suite of small services, each running in its own process and communicating with lightweight mechanisms, often an HTTP resource API. These services are built around business capabilities and independently deployable by fully automated deployment machinery. There is a bare minimum of centralized management of these services, which may be written in different programming languages and use different data storage technologies.
                 </blockquote>
                 - Martin Fowler, ThoughtWorks
+                <aside class="notes">
+                </aside>
             </section>
             <section>
                 <h2>Why Microservices?</h2>
@@ -60,24 +61,48 @@
                 </ul>
             </section>
             <section>
-                <h2>A word of caution</h2>
-                <ul>
-                    <li>Microservices are not a magic bullet</li>
-                    <li>You need to evaluate if they are right for your team</li>
-                    <li>Services may be simpler, but there is more complexity in how they interact and are managed</li>
-                    <li>Monolithic architecture is still a perfectly valid choice</li>
-                </ul>
-            </section>
-            <section>
-                <h2>What is Wildfly Swarm?</h2>
+                <h2>What is WildFly Swarm?</h2>
                 <ul>
                     <li>Open Source project sponsored by Red Hat</li>
-                    <li>Based on the Wildfly Application Server</li>
+                    <li>Based on the WildFly Application Server</li>
                     <li>Allows you to create microservices using standard Java EE API&apos;s on a mature runtime stack</li>
                     <li>Allows you to pick the functionality that you require, and leave everything else</li>
                 </ul>
             </section>
             <section>
+                <h2>WildFly Swarm Core Concepts</h2>
+                <ul>
+                    <li>Packages everything into a &quot;uberjar&quot; application</li>
+                    <li>Includes just the bits of WildFly that your application requires</li>
+                    <li>Composed of many &quot;Fractions&quot; which map to specific server features</li>
+                    <li>You decide on the fractions you need, and only the required functionality will be bundled</li>
+                    <li>Provides additional features, such as Netflix open source components</li>
+                </ul>
+            </section>
+            <section>
+                <h2>Rightsize Your Services</h2>
+                <ul>
+                    <li>Use the API&apos;s you want</li>
+                    <li>Include the capabilities you need</li>
+                    <li>Wrap it up for deployment</li>
+                </ul>
+            </section>
+            <section>
+                <h2>Monolithic Architecture</h2>
+                <img class="plain" src="images/monolithic-as-dark.svg"/>
+                <aside class="notes">
+                    Monolithic architecture bundles all components, in our case Java EE API's.
+                </aside>
+            </section>
+            <section>
+                <h2>WildFly Swarm Architecture</h2>
+                <img class="plain" src="images/swarm-uberjar-dark.svg"/>
+                <aside class="notes">
+                    In WildFly Swarm if you need JAX-RS only the API's required to run JAX-RS are used.
+                </aside>
+            </section>
+            <section>
+                <h2>Installation</h2>
                 <table class="compare">
                     <thead>
                         <tr>
@@ -89,15 +114,45 @@
                         <tr>
                             <td>
                                 <ul>
-                                    <li>Configuration stored in XML file</li>
+                                    <li>Unzip WildFly on the server</li>
+                                    <li>Configure WildFly (add data sources, etc.)</li>
+                                    <li>Deployment applications</li>
+                                </ul>
+                            </td>
+                            <td>
+                                <ul>
+                                    <li>Copy jar file to the server</li>
+                                </ul>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <aside class="notes">
+                    A bit of a comparison between WildFly and WildFly Swarm.
+                </aside>
+            </section>
+            <section>
+                <h2>Configuration</h2>
+                <table class="compare">
+                    <thead>
+                        <tr>
+                            <th>WildFly</th>
+                            <th>WildFly Swarm</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>
+                                <ul>
                                     <li>Managed via web console or CLI</li>
+                                    <li>Configuration stored in XML file</li>
                                     <li>System Administrators (not developers) most likely to be responsible for maintaining the server installation and configuration</li>
                                 </ul>
                             </td>
                             <td>
                                 <ul>
                                     <li>Convention over configuration approach</li>
-                                    <li>Configuration can be programatic, XML based, or a mix</li>
+                                    <li>Configuration can be programmatic, XML based, or a mix</li>
                                     <li>Developers can choose exactly which config options to expose, and how to configure them</li>
                                     <li>Maps well to a DevOps approach</li>
                                 </ul>
@@ -107,29 +162,32 @@
                 </table>
             </section>
             <section>
-                <h2>Wildfly Swarm Core Concepts</h2>
+                <h2>DevOps</h2>
                 <ul>
-                    <li>Packages everything into a &quot;uberjar&quot; application</li>
-                    <li>Includes just the bits of Wildfly that your application requires</li>
-                    <li>Composed of many &quot;Fractions&quot; which map to specific server features</li>
-                    <li>You decide on the fractions you need, and only the required functionality will be bundled</li>
-                    <li>Provides additional features, such as Netflix open source components</li>
+                    <li>WildFly Swarm has been designed to be dev ops friendly</li>
+                    <li>Simple installation</li>
+                    <li>Developers can choose which config options to support</li>
+                    <li>In general only config options relevant to the app will be exposed</li>
+                    <li>Single jar approach works well with Linux containers (Docker)</li>
                 </ul>
             </section>
             <section>
-                <h3>What is a fraction?</h3>
-                <blockquote class="fragment fade-in">
-                    A well-defined collection of capabilities to add. In some cases, a fraction maps directly to a subsystem from WildFly, but in other cases (e.g. Keycloak, Ribbon) a fraction may involve different functionality.
-                </blockquote>
-                <h3 class="fragment fade-in">What is an uberjar (fat jar)?</h3>
-                <blockquote class="fragment fade-in">
-                    A self-contained, executable Java archive. In the case of WildFly Swarm uberjars, it is a single <code>.jar</code> file containing your application, the portions of WildFly required to support it, an internal Maven repository of dependencies, plus a shim to bootstrap it all.
-                </blockquote>
+                <h2>A word of caution</h2>
+                <ul>
+                    <li>Microservices are not a magic bullet</li>
+                    <li>You need to evaluate if they are right for your team</li>
+                    <li>Services may be simpler, but there is more complexity in how they interact and are managed</li>
+                    <li>Monolithic architecture is still a perfectly valid choice</li>
+                </ul>
+            </section>
+            <section>
+                <h1>Using WildFly Swarm</h1>
             </section>
             <section>
                 <h4>How do I convert a current Java EE project to use WildFly Swarm?</h4>
-                <pre class="fragment">
-                    <code data-trim data-noescape>
+                <div class="fragment">
+                    <pre>
+                        <code data-trim data-noescape>
 &lt;plugin&gt;
     &lt;groupId&gt;org.wildfly.swarm&lt;/groupId&gt;
     &lt;artifactId&gt;wildfly-swarm-plugin&lt;/artifactId&gt;
@@ -143,11 +201,185 @@
         &lt;/execution&gt;
     &lt;/executions&gt;
 &lt;/plugin&gt;
+                        </code>
+                    </pre>
+                    <h3>That&apos;s it!</h3>
+                </div>
+                <aside class="notes">
+                    WildFly Swarm allows you to use the Java EE API&apos; you already know.
+                    You can easily convert a current Java EE project to use WildFly Swarm.
+                </aside>
+            </section>
+            <section>
+                <h2>Build it</h2>
+                <pre>
+                    <code class="bash" data-trim data-noescape>
+mvn package
+                    </code>
+                </pre>
+                <h2>Run it</h2>
+                <pre>
+                    <code class="bash" data-trim data-noescape>
+mvn wildfly-swarm:run
+                    </code>
+                </pre>
+                <em>- or -</em>
+                <pre>
+                    <code class="bash" data-trim data-noescape>
+java -jar target/myapp-swarm.jar
                     </code>
                 </pre>
             </section>
             <section>
                 <h1>Demo</h1>
+            </section>
+            <section>
+                <h2>What did we do?</h2>
+                <ul>
+                    <li>Added the <code>org.wildfly.swarm:wildfly-swarm-plugin</code> to our pom</li>
+                    <li>Built the project, just as we would have before</li>
+                    <li>Ran the project instead of deploying the project</li>
+                </ul>
+            </section>
+            <section>
+                <h2>Convention over configuration</h2>
+                <ul>
+                    <li>Appropriate Fractions will be selected based on your applications dependencies</li>
+                    <li>Based around sensible defaults</li>
+                    <li>A default configuration will be provided</li>
+                    <li>All this can be customized</li>
+                </ul>
+            </section>
+            <section>
+                <h2>Fractions</h2>
+                <ul>
+                    <li>Fractions provide a specific piece of functionality
+                        <ul>
+                            <li>May map directly do a WildFly subsystem (e.g. JAX-RS)</li>
+                            <li>Or bring in something else entirely (e.g. Keycloak, Ribbon)</li>
+                        </ul>
+                    </li>
+                    <li>Fractions can provide deployments
+                        <ul>
+                            <li>Topology deployment gives access to the topology</li>
+                        </ul>
+                    </li>
+                    <li>Fractions can alter user deployments
+                        <ul>
+                            <li>Keycloak fraction can be used to secure a deployment</li>
+                        </ul>
+                    </li>
+                    <li>Fractions can be auto detected by the Swarm plugin based on the contents of your project, or can be explicitly enabled and configured</li>
+                </ul>
+            </section>
+            <section>
+                <h3>Explicitly defining fractions</h3>
+                <pre>
+                    <code data-trim-data-noescape>
+&lt;dependency&gt;
+    &lt;groupId&gt;org.wildfly.swarm&lt;/groupId&gt;
+    &lt;artifactId&gt;datasources&lt;/artifactId&gt;
+&lt;/dependency&gt;
+                    </code>
+                </pre>
+                <div class="fragment">
+                    <h3>Force fraction detection</h3>
+                    <pre>
+                        <code data-trim-data-noescape>
+&lt;fractionDetectMode&gt;force&lt;/fractionDetectMode&gt;
+                        </code>
+                    </pre>
+                </div>
+                <aside class="notes">
+                    When explicitly defining fractions you&apos;ll likely want to enable fraction detection.
+                </aside>
+            </section>
+            <section>
+                <h2>The <code>main()</code> method</h2>
+                <ul>
+                    <li>The <code>main()</code> method is the entry point to a Swarm app</li>
+                    <li>If it is not provided Swarm uses a default <code>main()</code> method</li>
+                    <li>Can be used to configure the container and the deployment</li>
+                </ul>
+            </section>
+            <section>
+                <h3>Take control with the <code>main()</code> method</h3>
+                <pre>
+                    <code class="java" data-trim-data-noescape>
+public static void main(final String[] args) throws Exception {
+    final Container container = new Container();
+
+    final JAXRSArchive deployment = ShrinkWrap.create(JAXRSArchive.class, "myapp.war");
+    deployment.addClass(MyResource.class);
+    deployment.addClass(NotFoundExceptionMapper.class);
+    deployment.addAllDependencies();
+    container.start().deploy(deployment);
+}
+                    </code>
+                </pre>
+                <pre>
+                    <code data-trim-data-noescape>
+&lt;configuration&gt;
+    &lt;mainClass&gt;org.wildfly.swarm.examples.jaxrs.shrinkwrap.Main&lt;/mainClass&gt;
+&lt;/configuration&gt;
+                    </code>
+                </pre>
+            </section>
+            <section>
+                <h2>Container Configuration</h2>
+                <p>There are two options for configuring the container:
+                    <ol>
+                        <li class="fragment">Using the Java API</li>
+                        <li class="fragment">Using XML</li>
+                    </ol>
+                </p>
+                <span class="fragment">You can use a mix of both options.</span>
+            </section>
+            <section>
+                <h2>Configuration using the Java API</h2>
+                <pre>
+                    <code class="java" data-trim data-noescape>
+final Container container = new Container()
+        .fraction(new DatasourcesFraction()
+                .jdbcDriver("h2", (d) -> {
+                    d.driverClassName("org.h2.Driver");
+                    d.xaDatasourceClass("org.h2.jdbcx.JdbcDataSource");
+                    d.driverModuleName("com.h2database.h2");
+                })
+                .dataSource("ExampleDS", (ds) -> {
+                    ds.driverName("h2");
+                    ds.connectionUrl("jdbc:h2:mem:test;DB_CLOSE_DELAY=-1");
+                    ds.userName("sa");
+                    ds.password("sa");
+                })
+        );
+                    </code>
+                </pre>
+            </section>
+            <section>
+                <h2>Configuration using the XML</h2>
+                <pre>
+                    <code class="java" data-trim data-noescape>
+final ClassLoader cl = Main.class.getClassLoader();
+final URL xmlConfig = cl.getResource("standalone.xml");
+
+final Container container = new Container()
+        .withXmlConfig(xmlConfig);
+                    </code>
+                </pre>
+            </section>
+            <section>
+                <h1>Demo</h1>
+                <aside class="notes">
+                    Before applying stash show the persistence.xml and the ds.xml that will be deleted.
+                    <p>
+                        If time allows show some of the WildFly Swarm examples like Swagger
+                    </p>
+                </aside>
+            </section>
+
+            <section>
+                <h1>Questions?</h1>
             </section>
 
             <!-- Final Slide -->
@@ -159,6 +391,7 @@
                     <li>IRC #wildfly-swarm</li>
                     <li>Website <a href="http://wildfly-swarm.io/">http://wildfly-swarm.io/</a></li>
                     <li>User Guide <a href="http://wildfly-swarm.gitbooks.io/wildfly-swarm-users-guide/content/">http://wildfly-swarm.gitbooks.io/wildfly-swarm-users-guide/content/</a></li>
+                    <li>Issues: <a href="https://issues.jboss.org/projects/SWARM">https://issues.jboss.org/projects/SWARM</a></li>
                 </ul>
             </section>
         </div>
