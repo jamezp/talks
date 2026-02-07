@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>State of the Runtime: Modern Jakarta EE Development with WildFly</title>
+    <meta name="description"
+          content="Has your view of Enterprise Java evolved with the platform? In this session, James R. Perkins (Jakarta EE & RESTEasy Co-Lead) dives into the modern developer experience on WildFly.">
+    <meta name="author" content="James R. Perkins">
+    <link rel="icon" type="image/png" href="assets/img/favicon.ico">
+
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.css">
+    <link rel="stylesheet" href="wildfly-theme.css" id="theme">
+
+    <!-- Theme used for syntax highlighting of code -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/monokai.css">
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+
+        <!-- Title Slide with Hero Image Background -->
+        <section data-background="assets/img/wildfly_hero.jpg"
+                 data-background-size="cover"
+                 data-background-position="center">
+            <div style="background-color: rgba(30, 46, 55, 0.85); padding: 2rem; border-radius: 10px;">
+                <h1>State of the Runtime</h1>
+                <h3>Modern Jakarta EE Development with WildFly</h3>
+                <p>
+                    <small>by <strong>James R. Perkins</strong></small>
+                </p>
+            </div>
+            <aside class="notes">
+                OPENING (30 seconds):
+                Hello everyone! Thanks for having me today
+                My name is James Perkins, and I'm here to talk about modern Jakarta EE development with WildFly.
+                <p>
+                    Has your view of Enterprise Java evolved with the platform? I hope by the end of this talk, you'll
+                    see
+                    how far Jakarta EE and WildFly have come.
+                </p>
+            </aside>
+        </section>
+
+        <!-- About Me -->
+        <section>
+            <h3>About Me</h3>
+            <ul>
+                <li>Software Engineer at IBM</li>
+                <li>Longtime open-source contributor (15+ years on WildFly)</li>
+                <li>Project lead for RESTEasy</li>
+                <li>Co-lead of Jakarta EE Specification and Jakarta REST</li>
+                <li>Creator of several integration and testing tools for WildFly</li>
+            </ul>
+            <aside class="notes">
+                ABOUT ME (1 minute):
+                "Let me tell you a bit about myself."
+                <ul>
+                    <li>I'm a Software Engineer at IBM"</li>
+                    <li>I've been working on WildFly for over 15 years now</li>
+                    <li>I lead the RESTEasy project, which is the Jakarta REST implementation you'll see today</li>
+                    <li>I'm also a co-lead of Jakarta EE and Jakarta REST specifications</li>
+                    <li>And I've created some testing tools we'll look at later - wildfly-testing-tools and the
+                        wildfly-maven-plugin
+                    </li>
+                </ul>
+            </aside>
+        </section>
+
+        <!-- Agenda -->
+        <section>
+            <h3>What We'll Cover</h3>
+            <ul>
+                <li class="fragment">Jakarta EE and Jakarta REST today</li>
+                <li class="fragment">Modern WildFly provisioning and deployment</li>
+                <li class="fragment">Testing Jakarta EE applications</li>
+                <li class="fragment">Building and deploying with Docker</li>
+                <li class="fragment">Live demos throughout</li>
+            </ul>
+            <aside class="notes">
+                AGENDA (1 minute):
+                Here's what we'll cover today:
+                <ul>
+                    <li>First, where Jakarta EE and Jakarta REST are today</li>
+                    <li>Then we'll look at modern WildFly - how to build slim, custom runtimes</li>
+                    <li>Testing - I'll show you some tools that make testing Jakarta EE apps much easier</li>
+                    <li>Deploying to Docker with just Maven</li>
+                    <li>And I'll demo all of this with an application</li>
+                </ul>
+            </aside>
+        </section>
+
+        <!-- Jakarta EE Today -->
+        <section>
+            <section>
+                <h2>Jakarta EE Today</h2>
+                <ul>
+                    <li class="fragment">Active and evolving platform</li>
+                    <li class="fragment">Jakarta EE 11 released in 2025</li>
+                    <li class="fragment">Modern specifications with regular updates</li>
+                    <li class="fragment">Strong vendor support and community</li>
+                    <li class="fragment">Cloud-native ready</li>
+                </ul>
+                <aside class="notes">
+                    JAKARTA EE TODAY (2-3 minutes):
+                    Let's talk about Jakarta EE today.
+                    <ul>
+                        <li>It's an active, evolving platform - not the legacy monolith some people think it is</li>
+                        <li>We just released Jakarta EE 11 in 2025
+                            That was delayed from 2024 due to a major TCK
+                            refactor.
+                        </li>
+                        <li>Specs are updated regularly with modern features</li>
+                        <li>Strong vendor support - multiple implementations, active community</li>
+                        <li>And it's cloud-native ready - designed for containers and cloud platforms</li>
+                    </ul>
+                </aside>
+            </section>
+
+            <!-- Jakarta REST -->
+            <section>
+                <h3>Jakarta REST Highlights</h3>
+                <ul>
+                    <li class="fragment">Name changed from JAX-RS to Jakarta REST</li>
+                    <li class="fragment">SeBootstrap API for programmatic server startup</li>
+                    <li class="fragment">Multipart support improvements</li>
+                    <li class="fragment">Better integration with CDI and JSON-B</li>
+                    <li class="fragment">Foundation for modern REST APIs with Jakarta EE</li>
+                </ul>
+                <aside class="notes">
+                    JAKARTA REST (2 minutes):
+                    <ul>
+                        <li>JAX-RS to Jakarta REST - part of the Jakarta EE rebrand</li>
+                        <li>SeBootstrap API lets you start a REST server programmatically, without a full container
+                            <ul>
+                                <li>This is really important for testing - we'll come back to this</li>
+                            </ul>
+                        </li>
+                        <li>Better multipart support - file uploads are much cleaner now</li>
+                        <li>Tighter integration with CDI and JSON-B - everything works together</li>
+                        <li>This is the foundation for building modern REST APIs with Jakarta EE</li>
+                    </ul>
+                </aside>
+            </section>
+        </section>
+
+        <!-- WildFly Provisioning -->
+        <section>
+            <section>
+                <h2>WildFly Provisioning</h2>
+                <ul>
+                    <li class="fragment">Traditional: Download full WildFly, deploy WAR</li>
+                    <li class="fragment">Modern: Build exactly what you need</li>
+                    <li class="fragment">Smaller footprint, faster startup</li>
+                    <li class="fragment">Container-friendly deployments</li>
+                </ul>
+                <aside class="notes">
+                    MODERN PROVISIONING (2 minutes):
+                    WildFly has completely transformed how you build and deploy applications.
+                    <ul>
+                        <li>The old way: Download a 400MB WildFly zip, unzip it, deploy your WAR to it</li>
+                        <li>The new way: Build exactly what your application needs</li>
+                        <li>This means smaller footprint, faster startup times</li>
+                        <li>And it's perfect for containers - no bloat</li>
+                    </ul>
+                    KEY POINT: "WildFly isn't a heavyweight app server anymore. You build lean, purpose-built runtimes."
+                </aside>
+            </section>
+
+            <!-- Galleon -->
+            <section>
+                <h3>Galleon: Build What You Need</h3>
+                <ul>
+                    <li class="fragment">Provision custom WildFly servers</li>
+                    <li class="fragment">Choose only the layers you need</li>
+                    <li class="fragment">Significantly reduced disk footprint</li>
+                    <li class="fragment">Maven plugin integration</li>
+                </ul>
+                <aside class="notes">
+                    GALLEON (3-4 minutes with demo):
+                    First up - Galleon. This is WildFly's provisioning tool.
+                    <ul>
+                        <li>It lets you provision a custom WildFly server</li>
+                        <li>You pick only the layers you need - like ee-core-profile-server, cdi, jpa</li>
+                        <li>Dramatically reduces the disk footprint</li>
+                        <li>And it's integrated right into the Maven plugin</li>
+                    </ul>
+                    DEMO TIME:
+                    [Switch to IDE/terminal]
+                    <ul>
+                        <li>Let me show you a pom.xml with wildfly-maven-plugin</li>
+                        <li>Show the &lt;layers&gt; configuration</li>
+                        <li>See? Just ee-core-profile-server, cdi, jpa</li>
+                        <li>Run: mvn clean package -DskipTests</li>
+                        <li>Look at target/ - the server is only about 137MB instead of 400MB</li>
+                        <li>KEY POINT: "You only ship what you need"</li>
+                    </ul>
+                </aside>
+            </section>
+
+            <!-- Bootable JAR -->
+            <section>
+                <h3>WildFly Bootable JAR</h3>
+                <ul>
+                    <li class="fragment">Single executable JAR containing app + server</li>
+                    <li class="fragment">Simple deployment: <code>java -jar myapp.jar</code></li>
+                    <li class="fragment">Perfect for containers and cloud platforms</li>
+                    <li class="fragment">Built with wildfly-maven-plugin</li>
+                </ul>
+                <aside class="notes">
+                    BOOTABLE JAR (3-4 minutes with demo):
+                    <ul>
+                        <li>It's a single executable JAR that contains your app AND the server</li>
+                        <li>Run it with just: java -jar myapp.jar</li>
+                        <li>Perfect for containers - one file, that's it</li>
+                        <li>Built with the same wildfly-maven-plugin, just different goal</li>
+                    </ul>
+                    DEMO TIME:
+                    [Switch to IDE/terminal]
+                    <ul>
+                        <li>Show the bootableJar parameter in pom.xml</li>
+                        <li>Run: mvn clean package -DskipTests wildfly:package</li>
+                        <li>This builds a bootable JAR</li>
+                        <li>Show the JAR file: "Look - one file, everything you need"</li>
+                        <li>Run it: java -jar target/myapp-bootable.jar</li>
+                        <li>Server starts up [wait for it], app is deployed, done</li>
+                    </ul>
+                </aside>
+            </section>
+        </section>
+
+        <!-- Testing -->
+        <section>
+            <section>
+                <h2>Testing Jakarta EE Applications</h2>
+                <ul>
+                    <li class="fragment">Testing shouldn't be painful</li>
+                    <li class="fragment">Multiple approaches for different needs</li>
+                    <li class="fragment">Unit tests: Fast, focused, no container</li>
+                    <li class="fragment">Integration tests: Full stack, real container</li>
+                </ul>
+                <aside class="notes">
+                    TESTING INTRO (1-2 minutes):
+                    <ul>
+                        <li>Testing shouldn't be painful - but historically it has been in Jakarta EE</li>
+                        <li>The good news: we now have multiple approaches for different needs</li>
+                        <li>Unit tests: Fast, focused, no container required, unless you want it</li>
+                        <li>Integration tests: Full stack, real container</li>
+                    </ul>
+                    "I've built some tools to make this easier, and I want to show you three approaches."
+                    Transition: "Let's start with unit testing REST endpoints."
+                </aside>
+            </section>
+
+            <!-- Unit Testing -->
+            <section>
+                <h3>Unit Testing REST Endpoints</h3>
+                <p>RESTEasy JUnit Extension</p>
+                <ul>
+                    <li class="fragment">Uses Jakarta REST SeBootstrap API</li>
+                    <li class="fragment">No WildFly container needed</li>
+                    <li class="fragment">Simple annotation-based setup</li>
+                    <li class="fragment">Fast test execution</li>
+                </ul>
+                <aside class="notes">
+                    UNIT TESTING (4-5 minutes with demo):
+                    "RESTEasy JUnit Extension - this is for unit testing REST endpoints."
+                    <ul>
+                        <li>Uses the SeBootstrap API I mentioned earlier</li>
+                        <li>No WildFly or Jakarta EE container needed - it's lightweight</li>
+                        <li>Simple annotation-based setup</li>
+                        <li>Fast test execution</li>
+                    </ul>
+                    DEMO TIME:
+                    [Switch to IDE]
+                    <ul>
+                        <li>Show a simple test class</li>
+                        <li>Look at this: @RestBootstrap annotation on the test class</li>
+                        <li>Inject a Client or WebTarget - that's it</li>
+                        <li>Write a test: Make a request, assert the response</li>
+                        <li>Run it [click run]" - "See? Fast. No container startup.</li>
+                        <li>KEY POINT: "Just annotations and JUnit 5 or 6. That's all you need for testing REST
+                            endpoints."
+                        </li>
+                    </ul>
+                </aside>
+            </section>
+
+            <!-- Integration Testing -->
+            <section>
+                <h3>Integration Testing with WildFly</h3>
+                <p>WildFly Testing Tools</p>
+                <ul>
+                    <li class="fragment">Automatic WildFly lifecycle management</li>
+                    <li class="fragment">Per-test deployments with ShrinkWrap</li>
+                    <li class="fragment">Resource injection (URI, ModelControllerClient)</li>
+                    <li class="fragment">Simple alternative to Arquillian</li>
+                </ul>
+                <aside class="notes">
+                    INTEGRATION TESTING (4-5 minutes with demo):
+                    "WildFly Testing Tools - for full integration tests with a real WildFly server."
+                    <ul>
+                        <li>Automatic WildFly lifecycle - starts and stops the server for you</li>
+                        <li>Per-test deployments using ShrinkWrap</li>
+                        <li>Resource injection - you get the URI, ModelControllerClient, etc.</li>
+                        <li>This is a simpler alternative to Arquillian for WildFly-only scenarios</li>
+                    </ul>
+                    DEMO TIME:
+                    [Switch to IDE]
+                    <ul>
+                        <li>Here's an integration test with @WildFlyTest annotation</li>
+                        <li>See this @GenerateDeployment method? It creates the WAR to deploy</li>
+                        <li>And these injected resources - the server URI is injected automatically</li>
+                        <li>Run the test [click run]</li>
+                        <li>Watch - WildFly starts, deploys the app, runs the test, shuts down</li>
+                        <li>KEY POINT: "Full integration test with a real server, but all the plumbing is handled for
+                            you"
+                        </li>
+                    </ul>
+                </aside>
+            </section>
+
+            <!-- When to Use What -->
+            <section>
+                <h3>When to Use What</h3>
+                <ul>
+                    <li class="fragment"><strong>RESTEasy JUnit Extension:</strong> Unit tests, REST-only, fast feedback
+                    </li>
+                    <li class="fragment"><strong>WildFly Testing Tools:</strong> WildFly integration tests, simple setup
+                    </li>
+                    <li class="fragment"><strong>Arquillian:</strong> In-container testing or something more generic for
+                        other servers
+                    </li>
+                </ul>
+                <aside class="notes">
+                    TESTING DECISION GUIDE (2 minutes):
+                    "Here's how to choose which testing tool to use."
+                    <ul>
+                        <li>RESTEasy JUnit Extension: Use for unit tests, REST-only, when you want fast feedback
+                            "No container, very quick"
+                        </li>
+                        <li>WildFly Testing Tools: For WildFly integration tests, simple setup
+                            "When you need the full server but want it easy"
+                        </li>
+                        <li>Arquillian: In-container
+                            "Arquillian is still great - don't abandon it"
+                        </li>
+                    </ul>
+                    IMPORTANT: "These tools complement Arquillian, they don't replace it."
+                    "We still heavily use Arquillian in the WildFly test suite. Both the Jakarta EE and MicroProfile
+                    TCK's use Arquillian."
+                </aside>
+            </section>
+        </section>
+
+        <!-- Docker Deployment -->
+        <section>
+            <h3>Cloud-Ready: Docker Deployment</h3>
+            <p>WildFly Maven Plugin</p>
+            <ul>
+                <li class="fragment">Build Docker images directly from Maven</li>
+                <li class="fragment">Automatic Dockerfile generation</li>
+                <li class="fragment">Supports bootable JAR and traditional deployments</li>
+                <li class="fragment">One command: <code>mvn package wildfly:image</code></li>
+            </ul>
+            <aside class="notes">
+                DOCKER DEPLOYMENT (4-5 minutes with demo):
+                "Now let's talk about Docker. This is where it all comes together."
+                <ul>
+                    <li>You can build Docker images directly from Maven - no separate Dockerfile needed</li>
+                    <li>The plugin can auto-generate the Dockerfile for you</li>
+                    <li>Works with bootable JAR or traditional deployments</li>
+                    <li>One command: mvn package wildfly:image</li>
+                </ul>
+                DEMO TIME:
+                [Switch to IDE/terminal]
+                <ul>
+                    <li>Let me show you the pom.xml configuration for the image goal</li>
+                    <li>Show the &lt;image&gt; section in wildfly-maven-plugin config</li>
+                    <li>See? Just specify the image name, maybe some JVM options</li>
+                    <li>Run: mvn clean wildfly:image -DskipTests</li>
+                    <li>Watch it build... [wait] it's creating the Docker image</li>
+                    <li>Now let's run it: docker run -p 8080:8080 myapp:latest</li>
+                    <li>Server starts up in the container [wait for it]</li>
+                    <li>And there it is - running in Docker</li>
+                    <li>Test it: curl http://localhost:8080/api/tasks or open in browser</li>
+                    <li>KEY POINT: "From code to containerized app in one Maven command"</li>
+                </ul>
+            </aside>
+        </section>
+
+        <!-- Demo Intro -->
+        <section>
+            <section>
+                <h2>Putting It All Together</h2>
+                <aside class="notes">
+                    PUTTING IT ALL TOGETHER (30 seconds):
+                    "Alright, we've covered a lot of ground."
+                    "Let me bring this all together with a real application."
+                </aside>
+            </section>
+
+            <section>
+                <h3>Demo: Task Management API</h3>
+                <ul>
+                    <li class="fragment">Simple REST API for managing tasks</li>
+                    <li class="fragment">Jakarta EE features: REST, Persistence, CDI, Transactions</li>
+                    <li class="fragment">Multiple testing approaches</li>
+                    <li class="fragment">Multiple deployment options</li>
+                </ul>
+                <aside class="notes">
+                    DEMO APPLICATION (8-10 minutes - comprehensive walkthrough):
+                    "This is a Task Management API - simple CRUD operations on tasks."
+                    <ul>
+                        <li>Simple REST API for managing tasks</li>
+                        <li>Uses Jakarta EE features: REST, Persistence, CDI, Transactions</li>
+                        <li>Multiple testing approaches - we'll see unit tests and integration tests</li>
+                        <li>And multiple deployment options - we'll run it several ways</li>
+                    </ul>
+                    DEMO FLOW:
+                    [Switch to IDE]
+                    1. SHOW IT RUNNING FIRST:
+                    <ul>
+                        <li>Let me show you the app running</li>
+                        <li>Open browser or use curl to show the API working</li>
+                        <li>GET /api/tasks</li>
+                        <li>Here are the tasks</li>
+                        <li>POST to create a task</li>
+                        <li>Let's add one</li>
+                        <li>GET again to show it was added</li>
+                        <li>Simple, but it demonstrates the concepts</li>
+                    </ul>
+                    2. WALK THROUGH THE CODE:
+                    <ul>
+                        <li>Open Task.java</li>
+                        <li>JPA entity, nothing fancy</li>
+                        <li>Open TaskResource.java</li>
+                        <li>Jakarta REST resource</li>
+                        <li>Point out: @Path, @GET, @POST, @Transactional</li>
+                        <li>See how clean this is? Just annotations and business logic</li>
+                    </ul>
+                    3. SHOW THE TESTS:
+                    <ul>
+                        <li>Open a unit test with @RestBootstrap</li>
+                        <li>This tests just the REST endpoint - fast</li>
+                        <li>Run it [click run]</li>
+                        <li>See? Milliseconds</li>
+                        <li>Open an integration test with @WildFlyTest</li>
+                        <li>This tests the full stack - JPA, transactions, everything</li>
+                        <li>Run it [click run]</li>
+                        <li>Watch WildFly start up, deploy, test, shutdown</li>
+                    </ul>
+                    4. SHOW DEPLOYMENT OPTIONS:
+                    <ul>
+                        <li>We can deploy this several ways</li>
+                        <li>Show: mvn package wildfly:dev (dev mode - hot reload)</li>
+                        <li>Or: java -jar target/tasks-bootable.jar (bootable JAR)</li>
+                        <li>Or: docker run (containerized)</li>
+                        <li>Same code, multiple deployment strategies</li>
+                    </ul>
+                    KEY POINTS TO EMPHASIZE:
+                    <ul>
+                        <li>This is ~1,100 lines of code total - not huge, very manageable</li>
+                        <li>Jakarta EE isn't verbose or complicated - it's clean and focused</li>
+                        <li>Testing is built in, not an afterthought</li>
+                        <li>From code to production-ready container in minutes</li>
+                    </ul>
+                    [Switch back to slides]
+                    Transition: "That's the demo. Let me wrap up."
+                </aside>
+            </section>
+        </section>
+
+        <!-- Thank You -->
+        <section>
+            <h2>Thank You!</h2>
+            <p>Questions?</p>
+            <div>
+                More Information:
+                <ul class="project-links">
+                    <li><a href="https://jakarta.ee">Jakarta EE</a></li>
+                    <li><a href="https://wildfly.org">WildFly</a></li>
+                    <li><a href="https://docs.wildfly.org/wildfly-maven-plugin">WildFly Maven Plugin</a></li>
+                    <li><a href="https://wildfly-extras.github.io/wildfly-testing-tools">WildFly Testing Tools</a></li>
+                </ul>
+            </div>
+            <aside class="notes">
+                CLOSING (1 minute + Q&A):
+                <p>
+                    "Alright, that's what I wanted to show you today."
+                </p>
+                QUICK RECAP:
+                <ul>
+                    <li>We covered Jakarta EE 11 and Jakarta REST - active, modern, evolving</li>
+                    <li>WildFly provisioning with Galleon and Bootable JAR - build lean, deploy anywhere</li>
+                    <li>Testing tools that make Jakarta EE testing actually pleasant</li>
+                    <li>And Docker deployment in one Maven command</li>
+                </ul>
+                <p>
+                    I hope this showed you that Jakarta EE and WildFly have evolved a lot.
+                </p>
+                OPEN FOR QUESTIONS:
+                <br/>
+                BE READY TO ANSWER:
+                <ul>
+                    <li>GraalVM/native image support (WildFly has some support, but it's evolving)</li>
+                    <li>Migration from older Jakarta EE/Java EE versions</li>
+                    <li>Performance comparisons (don't make claims you can't back up)</li>
+                    <li>Specific testing scenarios</li>
+                    <li>Docker/Kubernetes deployment details</li>
+                    <li>Where to learn more (wildfly.org, jakarta.ee, your GitHub projects)</li>
+                </ul>
+            </aside>
+        </section>
+
+    </div>
+</div>
+
+<!-- WildFly Logo Footer -->
+<div class="wildfly-footer">
+    <img src="assets/img/logo.png" alt="WildFly"/>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/notes/notes.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/markdown/markdown.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@5.1.0/plugin/highlight/highlight.js"></script>
+<script>
+    // More info about initialization & config:
+    // - https://revealjs.com/initialization/
+    // - https://revealjs.com/config/
+    Reveal.initialize({
+        hash: true,
+        slideNumber: true,
+        showSlideNumber: 'speaker',
+        transition: 'slide',
+
+        // Learn about plugins: https://revealjs.com/plugins/
+        plugins: [RevealMarkdown, RevealHighlight, RevealNotes]
+    });
+</script>
+</body>
+</html>

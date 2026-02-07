@@ -1,0 +1,241 @@
+/**
+ * WildFly theme for reveal.js
+ * Based on WildFly branding colors and styles
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Red+Hat+Text:wght@400;500;700&family=Red+Hat+Mono&display=swap');
+
+/*********************************************
+ * GLOBAL STYLES
+ *********************************************/
+
+:root {
+    --r-background-color: #1e2e37;
+    --r-main-font: 'Red Hat Text', Arial, sans-serif;
+    --r-main-font-size: 40px;
+    --r-main-color: #ffffff;
+    --r-block-margin: 20px;
+    --r-heading-margin: 0 0 20px 0;
+    --r-heading-font: 'Red Hat Text', Arial, sans-serif;
+    --r-heading-color: #ffffff;
+    --r-heading-line-height: 1.2;
+    --r-heading-letter-spacing: normal;
+    --r-heading-text-transform: none;
+    --r-heading-text-shadow: none;
+    --r-heading-font-weight: 700;
+    --r-heading1-size: 2.5em;
+    --r-heading2-size: 1.8em;
+    --r-heading3-size: 1.4em;
+    --r-heading4-size: 1.0em;
+    --r-code-font: 'Red Hat Mono', monospace;
+    --r-link-color: #ff6d1f;
+    --r-link-color-dark: #d95b14;
+    --r-link-color-hover: #ff8c4a;
+    --r-selection-background-color: #ff6d1f;
+    --r-selection-color: #fff;
+}
+
+.reveal-viewport {
+    background-color: var(--r-background-color);
+}
+
+.reveal {
+    font-family: var(--r-main-font) sans-serif;
+    font-size: var(--r-main-font-size);
+    font-weight: normal;
+    color: var(--r-main-color);
+}
+
+.reveal ::selection {
+    color: var(--r-selection-color);
+    background: var(--r-selection-background-color);
+    text-shadow: none;
+}
+
+.reveal ::-moz-selection {
+    color: var(--r-selection-color);
+    background: var(--r-selection-background-color);
+    text-shadow: none;
+}
+
+/*********************************************
+ * HEADERS
+ *********************************************/
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4,
+.reveal h5,
+.reveal h6 {
+    margin: var(--r-heading-margin);
+    color: var(--r-heading-color);
+    font-family: var(--r-heading-font) sans-serif;
+    font-weight: var(--r-heading-font-weight);
+    line-height: var(--r-heading-line-height);
+    letter-spacing: var(--r-heading-letter-spacing);
+    text-transform: var(--r-heading-text-transform);
+    text-shadow: var(--r-heading-text-shadow);
+    word-wrap: break-word;
+}
+
+.reveal h1 { font-size: var(--r-heading1-size); }
+.reveal h2 { font-size: var(--r-heading2-size); }
+.reveal h3 { font-size: var(--r-heading3-size); }
+.reveal h4 { font-size: var(--r-heading4-size); }
+
+/*********************************************
+ * OTHER
+ *********************************************/
+
+.reveal p {
+    margin: var(--r-block-margin) 0;
+    line-height: 1.3;
+    font-weight: normal;
+}
+
+.reveal a {
+    color: var(--r-link-color);
+    text-decoration: none;
+    transition: color .15s ease;
+}
+
+.reveal a:hover {
+    color: var(--r-link-color-hover);
+    text-shadow: none;
+    border: none;
+}
+
+.reveal .roll span:after {
+    color: #fff;
+    background: var(--r-link-color-dark);
+}
+
+/*********************************************
+ * IMAGES
+ *********************************************/
+
+.reveal section img {
+    margin: 15px 0;
+    background: rgba(255, 255, 255, 0.12);
+    border: 4px solid currentColor;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.reveal section img.plain {
+    border: 0;
+    box-shadow: none;
+    background: transparent;
+}
+
+.reveal a img {
+    transition: all .15s linear;
+}
+
+.reveal a:hover img {
+    background: rgba(255, 255, 255, 0.2);
+    border-color: var(--r-link-color);
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.55);
+}
+
+/*********************************************
+ * NAVIGATION CONTROLS
+ *********************************************/
+
+.reveal .controls {
+    color: var(--r-link-color);
+}
+
+/*********************************************
+ * PROGRESS BAR
+ *********************************************/
+
+.reveal .progress {
+    background: rgba(0, 0, 0, 0.2);
+    color: var(--r-link-color);
+}
+
+/*********************************************
+ * PRINT BACKGROUND
+ *********************************************/
+
+@media print {
+    .backgrounds {
+        background-color: var(--r-background-color);
+    }
+}
+
+/*********************************************
+ * CODE
+ *********************************************/
+
+.reveal pre {
+    display: block;
+    position: relative;
+    width: 90%;
+    margin: var(--r-block-margin) auto;
+    text-align: left;
+    font-size: 0.55em;
+    font-family: var(--r-code-font), monospace;
+    line-height: 1.2em;
+    word-wrap: break-word;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.reveal code {
+    font-family: var(--r-code-font), monospace;
+    text-transform: none;
+    tab-size: 2;
+}
+
+.reveal pre code {
+    display: block;
+    padding: 5px;
+    overflow: auto;
+    max-height: 400px;
+    word-wrap: normal;
+}
+
+/*********************************************
+ * CUSTOM WildFly BRANDING
+ *********************************************/
+
+/* Logo in footer */
+.reveal .slide-number {
+    background-color: transparent;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+/* WildFly accent color for highlights */
+.reveal strong,
+.reveal b {
+    color: #ff6d1f;
+}
+
+/* Custom footer with logo */
+.wildfly-footer {
+    position: fixed;
+    bottom: 40px;
+    left: 25px;
+    z-index: 1000;
+    height: 40px;
+}
+
+.wildfly-footer img {
+    height: 55px;
+    border: none;
+    background: none;
+    box-shadow: none;
+    margin: 0;
+}
+
+/* Lists */
+.reveal ul,
+.reveal ol {
+    text-align: left;
+}
+
+.reveal ul ul,
+.reveal ol ol {
+    font-size: 0.9em;
+}

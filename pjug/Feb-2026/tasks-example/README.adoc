@@ -1,0 +1,12 @@
+= Arquillian, JUnit 5 and WIldFly Example
+
+This is an example project which uses JUnit 5 and Arquillian to test an application with WildFly.
+
+== Build
+
+Maven and Java SE 17 or higher is required to build this project. To build the project with tests you can simply run.
+
+[source,bash]
+----
+mvn clean test
+----
