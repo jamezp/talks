@@ -1,0 +1,176 @@
+<!--
+  ~ Copyright The WildFly Authors
+  ~ SPDX-License-Identifier: Apache-2.0
+  -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Tasks</title>
+    <link rel="icon" href="resources/images/favicon.ico" type="image/x-icon">
+    <!-- CSS only -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet"
+          integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.13.1/font/bootstrap-icons.min.css">
+</head>
+<body data-bs-theme="dark">
+
+<div aria-live="polite" aria-atomic="true" class="position-relative">
+    <div id="liveAlertPlaceholder" class="toast-container top-0 end-0 p-3"></div>
+</div>
+
+<main class="container p-3">
+    <div class="modal" tabindex="-1" id="taskModal" aria-labelledby="taskModalLabel">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="taskModalLabel">Add Task</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form id="task" name="task">
+                        <input type="hidden" name="id">
+                        <div class="mb-3 mt-5 g-3">
+                            <div class="form-floating">
+                                <input id="summary" type="text" class="form-control needs-validation"
+                                       placeholder="Summary"
+                                       name="summary" required>
+                                <label for="summary">Summary</label>
+                            </div>
+                            <div class="invalid-feedback">
+                                Summary cannot be empty
+                            </div>
+                            <div class="pt-3">
+                                <select class="form-select" id="priority" name="priority" aria-label="Priority">
+                                    <option value="0">Urgent</option>
+                                    <option value="1">Important</option>
+                                    <option value="2">Normal</option>
+                                    <option value="3">Low</option>
+                                </select>
+                            </div>
+                            <div class="pt-3 form-floating">
+                        <textarea class="form-control" id="description" name="description"
+                                  style="height: 300px"></textarea>
+                                <label for="description">Description</label>
+                            </div>
+                            <div class="pt-3 g-3">
+                                <button id="addButton" type="button" class="m-1 btn btn-primary">Add</button>
+                                <button id="updateButton" type="button" class="m-1 btn btn-primary">Update</button>
+                                <button id="cancelButton" type="reset" class="m-1 btn btn-danger"
+                                        data-bs-dismiss="modal"
+                                        aria-label="Close">Cancel
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="col-1">
+                <h3>Tasks</h3>
+            </div>
+            <div class="col-1">
+            </div>
+            <div class="col">
+            </div>
+            <div class="col-2">
+                <span class="btn-group float-end" role="group">
+                    <button class="btn float-end" type="button" id="showHideCompleted">
+                        <i id="hide" class="bi bi-eye" data-bs-toggle="tooltip"
+                           data-bs-title="Hide Completed"></i>
+                        <i id="show" class="bi bi-eye-slash d-none" data-bs-toggle="tooltip"
+                           data-bs-title="Show Completed"></i>
+                    </button>
+                    <button class="btn float-end" type="button" id="addTask" data-bs-toggle="tooltip"
+                            data-bs-title="Add a new task">
+                        <i class="bi bi-plus-square" data-bs-toggle="modal" data-bs-target="#taskModal"
+                           aria-controls="taskModal"></i>
+                    </button>
+                </span>
+            </div>
+        </div>
+        <hr/>
+        <div id="tasks"></div>
+    </div>
+</main>
+
+<div class="modal fade" id="confirmDelete" tabindex="-1" aria-labelledby="editTaskLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5">Confirm Delete?</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-footer">
+                <input type="hidden" name="id" value="-1">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger btn-ok" name="deleteButton" id="deleteButton">Delete
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<template id="alert">
+    <div class="toast align-items-center border-0 opacity-75" role="alert" aria-live="assertive" aria-atomic="true">
+        <div class="d-flex">
+            <div class="toast-body"></div>
+            <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"
+                    aria-label="Close"></button>
+        </div>
+    </div>
+</template>
+
+<template id="rowTemplate">
+    <slot name="rowContainer">
+        <div data-name="summaryRow" class="row p-2">
+            <div class="col-1 text-center" role="button" data-name="completed">
+                <input type="checkbox" class="form-check-input" aria-label="Completed?">
+            </div>
+            <div class="col-1" data-name="priority"></div>
+            <div class="col" role="button" data-name="summary">
+            </div>
+            <div class="col-1" role="button" data-name="control">
+                <span class="btn-group float-end" role="group">
+                    <button class="btn" name="delete" type="button"><i class="bi bi-trash3" data-bs-toggle="modal"
+                                                                       data-bs-target="#confirmDelete"></i></button>
+                    <button class="btn" name="edit" type="button"><i class="bi bi-pencil-square"
+                                                                     data-bs-toggle="modal"
+                                                                     data-bs-target="#taskModal"></i></button>
+                </span>
+            </div>
+            <div data-name="detailRow" class="row collapse p-2 align-items-center">
+                <div class="col-1"></div>
+                <div class="col-1"></div>
+                <div class="col">
+                    <div class="card">
+                        <div class="card-header">Description</div>
+                        <div class="card-body">
+                            <slot name="detail"></slot>
+                        </div>
+                        <div class="card-footer">
+                            <div class="fw-lighter">Created:
+                                <slot name="created"></slot>
+                            </div>
+                            <div class="fw-lighter">Updated:
+                                <slot name="updated"></slot>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-1"></div>
+            </div>
+        </div>
+        <hr/>
+    </slot>
+</template>
+
+<script src="resources/main.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js"
+        integrity="sha384-FKyoEForCGlyvwx9Hj09JcYn3nv7wiPVlz7YYwJrWVcXK/BmnVDxM+D2scQbITxI"
+        crossorigin="anonymous"></script>
+</body>

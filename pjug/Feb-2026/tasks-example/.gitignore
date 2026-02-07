@@ -1,0 +1,22 @@
+#Ignore Maven target folder
+target/
+
+# Formatting cache
+.cache/
+
+#Ignore Eclipse files
+.settings/
+.classpath
+.project
+
+# Ignore Intellij files
+*.iml
+*.iws
+*.ipr
+.idea/
+
+# NetBeans
+nb-configuration.xml
+
+#Ignore Mac files
+.DS_Store
