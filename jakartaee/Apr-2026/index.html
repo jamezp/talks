@@ -1,0 +1,465 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Jakarta REST 5.0 - CDI Integration</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reset.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.css">
+    <link rel="stylesheet" href="css/jakarta-theme.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.11.1/build/styles/default.min.css">
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+
+            <!-- Title -->
+            <section data-background-image="images/jakarta-ee-bg.png" data-background-size="cover">
+                <img src="images/jakarta-ee-logo.png" alt="Jakarta EE" class="title-logo">
+                <h1 class="title-heading">Jakarta REST 5.0</h1>
+                <p class="title-subtitle">CDI Integration</p>
+                <div class="author-info">
+                    <p><strong>James R. Perkins</strong></p>
+                    <p>IBM</p>
+                    <p>April 2026</p>
+                </div>
+            </section>
+
+            <!-- Overview -->
+            <section>
+                <h2>Overview</h2>
+                <ul>
+                    <li><strong>Full CDI integration for dependency injection</strong>
+                        <ul>
+                            <li>Deprecates <code>@Context</code> in favor of <code>@Inject</code></li>
+                            <li>Backward compatible - existing code still works</li>
+                        </ul>
+                    </li>
+                    <li><strong>Automatic discovery via CDI stereotypes</strong>
+                        <ul>
+                            <li><code>@Path</code>, <code>@Provider</code>, <code>@ApplicationPath</code> are now stereotypes</li>
+                            <li>No additional annotations needed for bean discovery</li>
+                        </ul>
+                    </li>
+                    <li><strong>New <code>@EntityParam</code> annotation</strong>
+                        <ul>
+                            <li>Distinguishes request body from CDI beans in method parameters</li>
+                        </ul>
+                    </li>
+                    <li><strong>Targeted for Jakarta EE 12</strong></li>
+                </ul>
+            </section>
+
+            <!-- What's Deprecated -->
+            <section>
+                <h2>What's Deprecated</h2>
+                <ul>
+                    <li><strong><code>@Context</code> annotation</strong>
+                        <ul>
+                            <li>Use <code>@Inject</code> for field and constructor injection</li>
+                            <li>Resource method parameters do not need any annotation</li>
+                        </ul>
+                    </li>
+                    <li><strong><code>@Suspended</code> annotation</strong>
+                        <ul>
+                            <li>AsyncResponse identified by type alone</li>
+                            <li>Consistent with CDI type-based injection</li>
+                        </ul>
+                    </li>
+                    <li><strong><code>ContextResolver</code> interface</strong>
+                        <ul>
+                            <li>Replaced by CDI producers</li>
+                            <li>Use standard CDI patterns instead</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p class="deprecation-notice"><strong>All deprecated APIs still work - no breaking changes!</strong></p>
+                <aside class="notes">
+                    Remove the <code>@Context</code> from constructor and method parameters.
+                </aside>
+            </section>
+
+            <!-- Field Injection - Before & After -->
+            <section>
+                <h2>Field Injection - Before & After</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 class="column-header">Jakarta REST 4.0</h3>
+                        <pre><code class="language-java" data-trim>
+@Path("/greet1")
+public class SampleResource {
+
+    @Context
+    private UriInfo uriInfo;
+
+    @HeaderParam("who")
+    private String who;
+
+    private final GreetBean bean;
+}
+                        </code></pre>
+                    </div>
+                    <div>
+                        <h3 class="column-header">Jakarta REST 5.0</h3>
+                        <pre><code class="language-java" data-trim>
+@Path("/greet1")  // bean-defining annotation
+@RequestScoped    // implied by default
+public class SampleResource {
+
+    @Inject
+    private UriInfo uriInfo;
+
+    @Inject
+    @HeaderParam("who")
+    private String who;
+
+    private final GreetBean bean;
+}
+                        </code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Constructor Injection -->
+            <section>
+                <h2>Constructor Injection</h2>
+                <pre><code class="language-java" data-trim data-line-numbers="1-2,6-10">
+@Path("/greet1")
+public class SampleResource {
+
+    private final GreetBean bean;
+    private final String lang;
+
+    @Inject
+    public SampleResource(GreetBean bean,
+                          @QueryParam("lang") String lang) {
+        this.bean = bean;
+        this.lang = lang;
+    }
+}
+                </code></pre>
+                <ul>
+                    <li><strong>Constructor must be annotated with <code>@Inject</code></strong></li>
+                    <li><strong>Parameter annotations work as CDI qualifiers</strong></li>
+                    <li><strong>Standard CDI constructor injection</strong></li>
+                </ul>
+            </section>
+
+            <!-- Constructor Injection - Before & After -->
+            <section>
+                <h2>Constructor Injection - Before &amp; After</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 class="column-header">Jakarta REST 4.0</h3>
+                        <pre><code class="language-java" data-trim>
+@Path("/headers")
+public class SampleResource {
+
+    private final HttpHeaders headers;
+    private final String lang;
+
+    public SampleResource(@Context HttpHeaders headers,
+                          @QueryParam("lang") String lang) {
+        this.headers = headers;
+        this.lang = lang;
+    }
+}
+                        </code></pre>
+                    </div>
+                    <div>
+                        <h3 class="column-header">Jakarta REST 5.0</h3>
+                        <pre><code class="language-java" data-trim>
+@Path("/headers")
+public class SampleResource {
+
+    private final HttpHeaders headers;
+    private final String lang;
+
+    @Inject
+    public SampleResource(HttpHeaders headers,
+                          @QueryParam("lang") String lang) {
+        this.headers = headers;
+        this.lang = lang;
+    }
+}
+                        </code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Resource Method Parameters -->
+            <section>
+                <h2>Resource Method Parameters</h2>
+                <ul>
+                    <li><strong>No annotation needed on the method itself</strong>
+                        <ul>
+                            <li>The resource methods will be invoked with CDI method invokers</li>
+                            <li>Don't use <code>@Inject</code> on methods - it means something different in CDI!</li>
+                        </ul>
+                    </li>
+                    <li><strong>Parameter annotations act as CDI qualifiers</strong>
+                        <ul>
+                            <li><code>@PathParam</code>, <code>@QueryParam</code>, etc. qualify the injection point</li>
+                            <li>CDI producers resolve values from the request context</li>
+                        </ul>
+                    </li>
+                    <li><strong>Inject arbitrary CDI beans as parameters</strong>
+                        <ul>
+                            <li>Any CDI-managed bean can be a parameter</li>
+                            <li>Validator services, business beans, etc.</li>
+                        </ul>
+                    </li>
+                </ul>
+                <aside class="notes">
+                    <ul>
+                        <li>Critical point: DO NOT put @Inject on the method itself</li>
+                        <li>In CDI, @Inject on a method means "initializer method" - called once during bean construction</li>
+                        <li>Resource methods are invoked by CDI for each request, not as initializers</li>
+                        <li>Parameters use annotations as CDI qualifiers - this is the new pattern</li>
+                    </ul>
+                </aside>
+            </section>
+
+            <!-- The @EntityParam Requirement -->
+            <section>
+                <h2>The @EntityParam Requirement</h2>
+                <p><strong>Why it's needed:</strong></p>
+                <pre><code class="language-java" data-trim>
+@POST
+@Consumes(MediaType.APPLICATION_JSON)
+public Response create(@EntityParam Customer customer,  // Request body
+                       CustomerValidator validator) {   // CDI bean
+    // Without @EntityParam, how would we know customer
+    // is the request body vs. another CDI bean?
+}
+                </code></pre>
+                <ul>
+                    <li><strong>Distinguishes request body from CDI beans</strong></li>
+                    <li><strong>Deserialized using MessageBodyReader</strong></li>
+                    <li><strong>Only one <code>@EntityParam</code> per method</strong></li>
+                </ul>
+                <aside class="notes">
+                    <ul>
+                        <li>This is NEW in 5.0 - addresses ambiguity problem</li>
+                        <li>Without it: if Customer is a CDI bean, is it the request body or injected bean?</li>
+                        <li>@EntityParam makes it explicit: this parameter is the deserialized request body</li>
+                        <li>This will be the biggest issue we have to address with compatibility.</li>
+                        <li>Only one @EntityParam per method allowed</li>
+                    </ul>
+                </aside>
+            </section>
+
+            <!-- Resource Methods - Before & After -->
+            <section>
+                <h2>Resource Methods - Before &amp; After</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 class="column-header">Jakarta REST 4.0</h3>
+                        <pre><code class="language-java" data-trim>
+@POST
+@Path("/{id}")
+public Response createOrder(@Context HttpHeaders headers,
+                            @PathParam("id") long id,
+                            Order order) {
+    // Process order
+}
+                        </code></pre>
+                    </div>
+                    <div>
+                        <h3 class="column-header">Jakarta REST 5.0</h3>
+                        <pre><code class="language-java" data-trim>
+@POST
+@Path("/{id}")
+public Response createOrder(HttpHeaders headers,
+                            @PathParam("id") long id,
+                            @EntityParam Order order) {
+    // Process order
+}
+                        </code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Example - SSE -->
+            <section>
+                <h2>Example - Server-Sent Events</h2>
+                <div class="two-column">
+                    <div>
+                        <h3 class="column-header">Jakarta REST 4.0</h3>
+                        <pre><code class="language-java" data-trim>
+@GET
+@Path("sse")
+@Produces(MediaType.SERVER_SENT_EVENTS)
+public void getMessage(
+    @HeaderParam("who") String who,
+    @Context Sse sse,
+    @Context SseEventSink sseEventSink) {
+    sseEventSink.send(
+        sse.newEvent(
+            bean.getMessage(lang) + " " + who));
+}
+                        </code></pre>
+                    </div>
+                    <div>
+                        <h3 class="column-header">Jakarta REST 5.0</h3>
+                        <pre><code class="language-java" data-trim>
+@GET
+@Path("sse")
+@Produces(MediaType.SERVER_SENT_EVENTS)
+public void getMessage(
+    @HeaderParam("who") String who,
+    Sse sse,  // Type-based injection
+    SseEventSink sseEventSink) { // Type based
+    sseEventSink.send(
+        sse.newEvent(
+            bean.getMessage(lang) + " " + who));
+}
+                        </code></pre>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Automatic Discovery with Stereotypes -->
+            <section>
+                <h2>Automatic Discovery with Stereotypes</h2>
+                <p><strong>Jakarta REST annotations are now CDI stereotypes:</strong></p>
+                <ul>
+                    <li><strong><code>@Path</code> &rarr; <code>@RequestScoped</code> + <code>@Stereotype</code></strong>
+                        <ul>
+                            <li>Resources are request-scoped by default</li>
+                            <li>Automatically discovered by CDI</li>
+                        </ul>
+                    </li>
+                    <li><strong><code>@Provider</code> &rarr; <code>@ApplicationScoped</code> + <code>@Stereotype</code></strong>
+                        <ul>
+                            <li>Providers are application-scoped</li>
+                        </ul>
+                    </li>
+                    <li><strong><code>@ApplicationPath</code> &rarr; <code>@ApplicationScoped</code> + <code>@Stereotype</code></strong></li>
+                </ul>
+                <p class="mt-30"><strong>Default scopes can be overridden:</strong></p>
+                <pre><code class="language-java" data-trim>
+@Path("/admin")
+@ApplicationScoped  // Override default @RequestScoped
+public class AdminResource { }
+                </code></pre>
+                <aside class="notes">
+                    <ul>
+                        <li>These annotations are now stereotypes - means they're bean-defining</li>
+                        <li>@Path resources: @RequestScoped by default (new instance per request)</li>
+                        <li>@Provider: @ApplicationScoped (singleton)</li>
+                        <li>Can override with explicit scope annotation, but use @ApplicationScoped resources carefully</li>
+                        <li>CDI discovers them automatically</li>
+                    </ul>
+                </aside>
+            </section>
+
+            <!-- Application.getClasses() with CDI -->
+            <section>
+                <h2>Application.getClasses() with CDI</h2>
+                <p><strong>Understanding the separation:</strong></p>
+                <ul>
+                    <li><strong>CDI manages bean creation</strong>
+                        <ul>
+                            <li>All <code>@Path</code> and <code>@Provider</code> classes become CDI beans</li>
+                            <li>Independent of <code>Application.getClasses()</code></li>
+                        </ul>
+                    </li>
+                    <li><strong><code>getClasses()</code> controls request routing</strong>
+                        <ul>
+                            <li>Determines which resources handle requests</li>
+                            <li>Doesn't control CDI bean creation</li>
+                        </ul>
+                    </li>
+                    <li><strong><code>getSingletons()</code> instances are NOT CDI-managed</strong>
+                        <ul>
+                            <li>Plain objects, no CDI injection</li>
+                        </ul>
+                    </li>
+                </ul>
+                <p class="mt-30 note-text"><strong>Example:</strong> A <code>@Path</code> resource not in <code>getClasses()</code> is still a CDI bean, just not routable.</p>
+                <aside class="notes">
+                    <ul>
+                        <li>Common confusion: getClasses() vs CDI bean creation are SEPARATE</li>
+                        <li>CDI creates ALL @Path/@Provider classes as beans regardless of getClasses()</li>
+                        <li>getClasses() only controls ROUTING - which resources handle requests</li>
+                        <li>getSingletons() instances are NOT CDI-managed - plain objects</li>
+                        <li>A resource not in getClasses() is still a CDI bean, just not routable</li>
+                    </ul>
+                </aside>
+            </section>
+
+            <!-- Migration Guide -->
+            <section>
+                <h2>Migration Guide</h2>
+                <p><strong>Quick migration checklist:</strong></p>
+                <ul class="checklist">
+                    <li><strong>Fields & Constructors:</strong> Replace <code>@Context</code> with <code>@Inject</code></li>
+                    <li><strong>Entity Parameters:</strong> Add <code>@EntityParam</code> to request body parameters</li>
+                    <li><strong>AsyncResponse:</strong> Remove <code>@Suspended</code> annotation (type alone is enough)</li>
+                    <li><strong>Optional:</strong> Explicitly set CDI scopes if needed</li>
+                </ul>
+                <div class="migration-box">
+                    <p><strong>Backward compatibility:</strong></p>
+                    <ul>
+                        <li>Old <code>@Context</code> code still works (deprecated for removal)</li>
+                        <li>No immediate code changes required</li>
+                        <li>Migrate at your own pace</li>
+                        <li>The message request body will be the biggest issue we need to solve.</li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Resources -->
+            <section>
+                <h2>Resources</h2>
+                <div class="text-left">
+                    <p><strong>Specification & Reference:</strong></p>
+                    <ul>
+                        <li>Jakarta REST 5.0 Specification: <a href="https://jakarta.ee/specifications/restful-ws/5.0/">jakarta.ee/specifications/restful-ws/5.0/</a></li>
+                        <li>API Documentation: <a href="https://jakarta.ee/specifications/restful-ws/5.0/apidocs/">jakarta.ee/specifications/restful-ws/5.0/apidocs/</a></li>
+                        <li>GitHub Repository: <a href="https://github.com/jakartaee/rest">github.com/jakartaee/rest</a></li>
+                    </ul>
+
+                    <p class="mt-40"><strong>Migration Tools:</strong></p>
+                    <ul>
+                        <li>OpenRewrite recipe available for automated migration</li>
+                        <li>Helps convert <code>@Context</code> to <code>@Inject</code> and add <code>@EntityParam</code></li>
+                    </ul>
+
+                    <p class="mt-40"><strong>Feedback:</strong></p>
+                    <ul>
+                        <li><a href="https://github.com/jakartaee/rest/pull/1340">GitHub Pull Request</a></li>
+                    </ul>
+                </div>
+            </section>
+
+            <!-- Thank You -->
+            <section data-background-image="images/jakarta-ee-bg-reverse.png" data-background-size="cover">
+                <img src="images/jakarta-ee-logo.png" alt="Jakarta EE" class="title-logo">
+                <div class="thank-you-info">
+                    <p><strong>James R. Perkins</strong></p>
+                    <p><a href="mailto:jperkins@ibm.com">jperkins@ibm.com</a></p>
+                    <p><a href="https://github.com/jakartaee/rest">github.com/jakartaee/rest</a></p>
+                </div>
+                <p class="copyright-notice">
+                    Jakarta EE logo &copy; Eclipse Foundation | EPL-2.0
+                </p>
+            </section>
+
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/highlight.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@6.0.1/dist/plugin/notes.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: true,
+            transition: 'slide',
+            plugins: [ RevealHighlight, RevealNotes ]
+        });
+    </script>
+</body>
+</html>

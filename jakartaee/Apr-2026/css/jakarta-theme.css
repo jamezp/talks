@@ -1,0 +1,346 @@
+/**
+ * Jakarta EE Theme for reveal.js
+ * Based on official Jakarta EE Brand Guidelines
+ * Copyright 2025, Eclipse Foundation, Inc.
+ * Made Available under the Eclipse Public License 2.0 (EPL-2.0)
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&display=swap');
+
+/*********************************************
+ * Branded colors
+ *********************************************/
+:root {
+    --jakarta-dark-purple: #1B208B;
+    --jakarta-royal-blue: #1826CB;
+    --jakarta-light-blue: #5EA9FF;
+    --jakarta-orange: #FF7110;
+    --jakarta-yellow: #FDB940;
+    --jakarta-grey: #2F4A60;
+}
+
+/*********************************************
+ * Global Styles
+ *********************************************/
+
+.reveal {
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--jakarta-grey);
+}
+
+.reveal .slides {
+    text-align: left;
+}
+
+.reveal .slides section {
+    padding: 30px 50px;
+}
+
+/*********************************************
+ * Backgrounds
+ *********************************************/
+
+.reveal .slides section {
+    background-size: cover;
+    background-position: center;
+}
+
+/*********************************************
+ * Headers
+ *********************************************/
+
+.reveal h1,
+.reveal h2,
+.reveal h3,
+.reveal h4 {
+    margin: 0 0 30px 0;
+    font-weight: 700;
+    line-height: 1.2;
+    letter-spacing: normal;
+    text-transform: none;
+    word-wrap: break-word;
+    text-shadow: 0 1px 2px rgba(255, 255, 255, 0.5);
+}
+
+.reveal h1 {
+    font-size: 2.2em;
+    margin-bottom: 30px;
+}
+
+.reveal h2 {
+    font-size: 1.5em;
+    margin-bottom: 25px;
+    color: var(--jakarta-dark-purple);
+}
+
+.reveal h3 {
+    font-size: 1.1em;
+}
+
+/*********************************************
+ * Links
+ *********************************************/
+
+.reveal a {
+    color: var(--jakarta-light-blue);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.reveal a:hover {
+    color: var(--jakarta-orange);
+    text-shadow: none;
+    border: none;
+}
+
+/*********************************************
+ * Lists
+ *********************************************/
+
+.reveal ul,
+.reveal ol {
+    display: block;
+    margin: 0 0 15px 30px;
+}
+
+.reveal ul {
+    list-style-type: disc;
+}
+
+.reveal ul ul {
+    list-style-type: circle;
+    font-size: 0.85em;
+    margin-top: 5px;
+}
+
+.reveal li {
+    margin: 8px 0;
+}
+
+/*********************************************
+ * Jakarta EE Logo Footer
+ *********************************************/
+
+.reveal .slides section:not([data-background-image])::after {
+    content: '';
+    position: absolute;
+    bottom: 20px;
+    left: 20px;
+    width: 120px;
+    height: 33px;
+    background-size: contain;
+    background-repeat: no-repeat;
+    opacity: 0.6;
+}
+
+/*********************************************
+ * Footer
+ *********************************************/
+
+.reveal .slide-number {
+    background-color: rgba(27, 32, 139, 0.8);
+    color: white;
+    font-size: 16px;
+    padding: 8px 15px;
+}
+
+/*********************************************
+ * Custom
+ *********************************************/
+
+.text-orange {
+    color: var(--jakarta-orange) !important;
+}
+
+.text-blue {
+    color: var(--jakarta-royal-blue) !important;
+}
+
+.text-white {
+    color: white !important;
+}
+
+.highlight {
+    background: rgba(255, 113, 16, 0.2);
+    padding: 2px 8px;
+    border-radius: 3px;
+}
+
+/*********************************************
+ * Slide Specific Styles
+ *********************************************/
+
+/* Title slide logo positioning */
+.title-logo {
+    width: 300px;
+    margin-top: 30px;
+}
+
+/* Title slide heading */
+.title-heading {
+    margin-top: 180px;
+    color: white;
+}
+
+/* Title slide subtitle */
+.title-subtitle {
+    font-size: 1.5em;
+    color: var(--jakarta-light-blue);
+}
+
+/* Title slide author info */
+.author-info {
+    margin-top: 100px;
+    font-size: 0.5em;
+    color: var(--jakarta-yellow);
+}
+
+/* Copyright notice */
+.copyright-notice {
+    position: absolute;
+    bottom: 10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 0.4em;
+}
+
+/* Two column layout for before/after examples */
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+/* Column headers */
+.column-header {
+    font-size: 1em;
+    color: var(--jakarta-orange);
+}
+
+/* Deprecation notice box */
+.deprecation-notice {
+    margin-top: 40px;
+    font-size: 1.2em;
+    color: var(--jakarta-orange);
+}
+
+/* Migration info box */
+.migration-box {
+    margin-top: 40px;
+    padding: 20px;
+    background: rgba(255, 113, 16, 0.1);
+    border-left: 4px solid var(--jakarta-orange);
+}
+
+.migration-box p {
+    margin: 0;
+}
+
+.migration-box ul {
+    margin-top: 10px;
+}
+
+/* Thank you slide author info (right aligned) */
+.thank-you-info {
+    margin-top: 200px;
+    text-align: right;
+}
+
+.thank-you-info p:first-child {
+    font-size: 1.5em;
+}
+
+.thank-you-info p:nth-child(3) {
+    margin-top: 20px;
+}
+
+/* Text sections */
+.text-left {
+    text-align: left;
+}
+
+/* Spacing utilities */
+.mt-30 {
+    margin-top: 30px;
+}
+
+.mt-40 {
+    margin-top: 40px;
+}
+
+/* Small note text */
+.note-text {
+    font-size: 0.9em;
+}
+
+/* Checklist items with pure CSS checkmark */
+.checklist li {
+    list-style: none;
+    position: relative;
+    padding-left: 45px;
+}
+
+/* Orange circle background */
+.checklist li::before {
+    content: "";
+    position: absolute;
+    left: 0;
+    top: 2px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    background: var(--jakarta-orange);
+}
+
+/* White checkmark */
+.checklist li::after {
+    content: "";
+    position: absolute;
+    left: 8px;
+    top: 5px;
+    width: 6px;
+    height: 12px;
+    border: solid white;
+    border-width: 0 3px 3px 0;
+    transform: rotate(45deg);
+}
+
+/*********************************************
+ * Code Blocks
+ *********************************************/
+
+.reveal pre {
+    display: block;
+    position: relative;
+    width: 90%;
+    margin: 20px auto;
+    text-align: left;
+    font-size: 0.45em;
+    font-family: 'Courier New', monospace;
+    line-height: 1.2em;
+    word-wrap: break-word;
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.15);
+}
+
+.reveal code {
+    font-family: 'Courier New', monospace;
+    text-transform: none;
+    tab-size: 2;
+}
+
+.reveal pre code {
+    display: block;
+    padding: 5px;
+    overflow: auto;
+    max-height: 400px;
+    word-wrap: normal;
+}
+
+/* Inline code (like `@Context` in text) */
+.reveal :not(pre) > code {
+    border-radius: 3px;
+    color: var(--jakarta-orange);
+    font-size: 0.9em;
+}
