@@ -19,7 +19,6 @@ import jakarta.persistence.Id;
 import jakarta.persistence.NamedQuery;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
-import jakarta.ws.rs.FormParam;
 
 import org.wildfly.example.resources.TaskListener;
 
@@ -45,20 +44,16 @@ public class Task {
     @Temporal(TemporalType.TIMESTAMP)
     private Instant updated;
 
-    @FormParam("completed")
     private boolean completed;
 
     @Column(nullable = false)
-    @FormParam("summary")
     private String summary;
 
     @Column
-    @FormParam("description")
     private String description;
 
     @Column
     @Enumerated
-    @FormParam("priority")
     private Priority priority;
 
     public Long getId() {

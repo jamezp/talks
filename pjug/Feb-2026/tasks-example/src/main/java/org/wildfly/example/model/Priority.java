@@ -23,7 +23,7 @@ public enum Priority {
     /**
      * Used to for using the ordinal value of the enum for JSON serialization and deserialization.
      */
-    protected static class OrdinalTypeAdaptor implements JsonbAdapter<Priority, Integer> {
+    public static class OrdinalTypeAdaptor implements JsonbAdapter<Priority, Integer> {
         @Override
         public Integer adaptToJson(final Priority obj) {
             return obj == null ? 2 : obj.ordinal();
