@@ -17,8 +17,6 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.NamedQuery;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 import org.wildfly.example.resources.TaskListener;
 
@@ -37,11 +35,9 @@ public class Task {
     private Long id;
 
     @Column(updatable = false, nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private Instant added;
 
     @Column(insertable = false)
-    @Temporal(TemporalType.TIMESTAMP)
     private Instant updated;
 
     private boolean completed;
