@@ -1,0 +1,538 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quarkus Through Fresh Eyes</title>
+    <link rel="stylesheet" href="lib/reveal.js/reset.css">
+    <link rel="stylesheet" href="lib/reveal.js/reveal.css">
+    <link rel="stylesheet" href="css/quarkus-theme.css">
+    <link rel="stylesheet"
+          href="lib/highlight.js/atom-one-dark.min.css">
+</head>
+<body>
+<div class="reveal">
+    <div class="slides">
+
+        <!-- Title -->
+        <section class="dark" data-background-color="#0D1C2C">
+            <h1 class="title-heading">Quarkus Through Fresh Eyes</h1>
+            <p class="title-subtitle">A Jakarta EE Veteran&rsquo;s First Months with Quarkus</p>
+            <div class="author-info">
+                <p><strong>James R. Perkins</strong></p>
+                <p>IBM</p>
+                <p>Portland Java User Group &middot; November 2026</p>
+            </div>
+        </section>
+
+        <!-- Who am I -->
+        <section>
+            <h2>Who Am I?</h2>
+            <ul>
+                <li>15 years on WildFly and JBoss EAP</li>
+                <li>Jakarta REST spec lead, RESTEasy project lead</li>
+                <li>JBoss Logging projects lead</li>
+                <li>On the Quarkus team since June 2026</li>
+                <li>Not a Spring developer</li>
+            </ul>
+            <aside class="notes">
+                Set expectations: I'm learning Quarkus too, and I don't know Spring well.
+            </aside>
+        </section>
+
+        <!-- What is Quarkus -->
+        <section class="dark" data-background-color="#205894">
+            <h2>What Is Quarkus?</h2>
+            <p class="title-subtitle">Supersonic Subatomic Java</p>
+            <aside class="notes">
+                The official tagline. What does it actually mean?
+            </aside>
+        </section>
+
+        <section>
+            <h2>A Stack for Writing Java Applications</h2>
+            <div class="two-column">
+                <div>
+                    <h3>Cloud Native</h3>
+                    <ul>
+                        <li>Fast startup</li>
+                        <li>Low memory usage</li>
+                        <li>Containers and Kubernetes</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Enterprise</h3>
+                    <ul>
+                        <li>Transactions, security</li>
+                        <li>Health, metrics, tracing</li>
+                        <li>Fault tolerance</li>
+                    </ul>
+                </div>
+            </div>
+            <p class="small">
+                Built on APIs you may already know: Jakarta REST, CDI, Jakarta Persistence, MicroProfile
+            </p>
+            <aside class="notes">
+                <ul>
+                    <li>
+                        Quarkus is a Java stack, not an app server. You don't deploy a WAR into something; the
+                        runtime is built into your application.
+                    </li>
+                    <li>
+                        Cloud native: it was built for containers, where startup time and memory cost money. Think
+                        scaling up fast, or many instances on one node.
+                    </li>
+                    <li>
+                        Enterprise: what you'd expect from an app server is still here. Many are the same projects
+                        WildFly uses: Narayana for transactions, Hibernate, SmallRye for MicroProfile.
+                    </li>
+                    <li>
+                        Each capability is an extension you add.
+                    </li>
+                    <li>
+                        Not only for microservices: CLIs, batch jobs, Kubernetes operators, monoliths too.
+                    </li>
+                    <li>
+                        Bottom line: same APIs, different moment when the work happens.
+                    </li>
+                </ul>
+            </aside>
+        </section>
+
+        <section>
+            <h2>Build-Time Principle</h2>
+            <h3>Being fast by doing less at startup</h3>
+            <table>
+                <thead>
+                <tr>
+                    <th>Work</th>
+                    <th>Traditional container</th>
+                    <th>Quarkus</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Parse configuration</td>
+                    <td>Startup</td>
+                    <td class="text-blue">Build</td>
+                </tr>
+                <tr>
+                    <td>Scan the classpath for annotations</td>
+                    <td>Startup</td>
+                    <td class="text-blue">Build</td>
+                </tr>
+                <tr>
+                    <td>Wire beans and resolve injection points</td>
+                    <td>Startup</td>
+                    <td class="text-blue">Build</td>
+                </tr>
+                <tr>
+                    <td>Generate proxies</td>
+                    <td>Startup</td>
+                    <td class="text-blue">Build</td>
+                </tr>
+                <tr>
+                    <td>Start the application</td>
+                    <td>Startup</td>
+                    <td>Startup</td>
+                </tr>
+                </tbody>
+            </table>
+            <aside class="notes">
+                When does the work happen?
+                <p>
+                    With a traditional application server, the server parses the configuration, processes the deployment,
+                    then starts the deployment.
+                </p>
+                <p>
+                    In Quarkus, the processing happens at build time leaving only the start of the services when starting.
+                    Generally speaking, that means fewer classes loaded, less reflection and less memory.
+                </p>
+                <p>
+                    You fail quicker with Quarkus. You see most failures at build time, rather than runtime.
+                </p>
+            </aside>
+        </section>
+
+        <section>
+            <h2>JVM or Native</h2>
+            <div class="two-column">
+                <div>
+                    <h3>JVM</h3>
+                    <ul>
+                        <li>Well-known, mature</li>
+                        <li>JIT, best peak performance</li>
+                        <li>Slower startup, more memory</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>Native</h3>
+                    <ul>
+                        <li>Very fast startup</li>
+                        <li>Low memory usage</li>
+                        <li>No JIT, longer builds</li>
+                        <li>Reflection may need registration</li>
+                    </ul>
+                </div>
+            </div>
+            <!-- Adapted from Clement's deck, slide 16. -->
+            <aside class="notes">
+                <ul>
+                    <li>
+                        Same code, same app. You choose JVM or native when you package, not when you write it.
+                    </li>
+                    <li>
+                        JVM mode is the default and what most people run.
+                    </li>
+                    <li>
+                        Native is built with GraalVM/Mandrel. It follows from the build-time principle: Quarkus already
+                        did the work at build time, so native compilation is the next step.
+                    </li>
+                    <li>
+                        Extensions handle most of the native configuration, like registering reflection, for you.
+                    </li>
+                    <li>
+                        When to pick native: fast scale-up, scale to zero, CLIs. When to stay on the JVM: long-running
+                        services where the JIT's peak throughput matters.
+                    </li>
+                </ul>
+<pre><code class="nohighlight">./mvnw package            # JVM
+./mvnw package -Dnative   # native
+./mvnw package -Dnative -Dquarkus.native.container-build=true   # no local GraalVM</code></pre>
+            </aside>
+        </section>
+
+        <section>
+            <h2>Too Much Magic?</h2>
+            <blockquote class="small">
+                Magic is not inherently bad. Magic is power that can be used for good or for bad. [&hellip;] There is
+                magic, it&apos;s just magic you have enough knowledge (or trust) of vs. magic you don&rsquo;t.
+            </blockquote>
+            <p class="small">
+                Cl&eacute;ment Escoffier, <a href="https://quarkus.io/blog/magic-control/">quarkus.io/blog/magic-control</a>
+            </p>
+            <aside class="notes">
+                Every framework in the room has magic, Spring Boot auto-configuration included. The point is knowing
+                where it happens. In Quarkus, it happens at build time, so you can inspect it. You'll see it in the
+                Dev UI in the first demo.
+            </aside>
+        </section>
+
+        <!-- The tasks app -->
+        <section>
+            <h2>The Tasks App</h2>
+            <h3>The same app from my February talk</h3>
+            <ul>
+                <li>Jakarta REST: CRUD and server-sent events</li>
+                <li>CDI, Jakarta Persistence, Transactions, Validation</li>
+                <li>Tests with Arquillian and JUnit</li>
+                <li>Runs on WildFly</li>
+            </ul>
+            <aside class="notes">
+                Source: pjug/Feb-2026/tasks-example.
+            </aside>
+        </section>
+
+        <!-- Demo: bringing the app over -->
+        <section class="dark" data-background-color="#205894">
+            <div class="demo-heading">
+                <p class="demo-tag">{ live coding }</p>
+                <h2>Bringing the Tasks App Over</h2>
+            </div>
+            <aside class="notes">
+                <p>New project, dev mode, bring HealthResource over, live reload, Dev UI.</p>
+<pre><code class="nohighlight">mkdir demo &amp;&amp; cd demo
+quarkus create app dev.jperkins.example:tasks --extension=rest-jsonb
+cd tasks &amp;&amp; mvn quarkus:dev</code></pre>
+                <p>Copy in HealthResource and open /status: the same Jakarta REST code runs. Then add MicroProfile Health:</p>
+<pre><code class="nohighlight">quarkus ext add smallrye-health
+quarkus ext add hibernate-orm hibernate-validator jdbc-h2</code></pre>
+                <p>Open /q/health (also /q/health/live, /ready, /started), then delete HealthResource: less code to own.</p>
+                <p>Mention: quarkus dev, ./mvnw quarkus:dev, code.quarkus.io, Gradle.</p>
+                <p>Dev mode keys: d opens the Dev UI, r runs the tests, h lists the rest.</p>
+            </aside>
+        </section>
+
+        <!-- Demo: Dev Services and data -->
+        <section class="dark" data-background-color="#205894">
+            <div class="demo-heading">
+                <p class="demo-tag">{ live coding }</p>
+                <h2>Data and Dev Services</h2>
+            </div>
+            <aside class="notes">
+                <p>
+                    On WildFly the data source came from a Galleon layer and java:comp/DefaultDataSource.
+                    Here, add the driver extension and Dev Services starts the database.
+                </p>
+                <p>
+                    A little bit about Dev Services. In dev and test mode, if an extension needs a service (a database, Kafka, Keycloak,
+                    Redis) and you haven't configured its URL, Quarkus starts one for you and wires in the connection
+                    settings. Usually that's a container (Docker or Podman); H2 runs in-process, which is what this
+                    demo uses. Nothing starts in production; there you configure the real service.
+                </p>
+<pre><code class="nohighlight">quarkus ext add hibernate-orm hibernate-validator jdbc-h2</code></pre>
+                <p>Copy in the app's classes from February: model, data and resources packages.</p>
+                <p>
+                    No persistence.xml. Point at the log line: Quarkus sets drop-and-create itself because Dev Services
+                    owns the database. For production, set it explicitly:
+                </p>
+<pre><code class="nohighlight">%prod.quarkus.datasource.jdbc.url=jdbc:h2:mem:tasks;DB_CLOSE_DELAY=-1
+%prod.quarkus.hibernate-orm.schema-management.strategy=create</code></pre>
+                <p>
+                    The persistence.xml still works (mainly for migrations), but it always uses the default data
+                    source, you may need to set the dialect yourself, and it can't be mixed with quarkus.hibernate-orm.*
+                    properties (that's an exception).
+                </p>
+                <p>
+                    Copy the UI: src/main/webapp moves to src/main/resources/META-INF/resources (index.html and
+                    resources/main.js). No WAR, so static files are served from the classpath. Open the UI.
+                </p>
+                <p>With Postgres the only change is the extension (jdbc-postgresql), and Dev Services starts a container for you.</p>
+                <p>Reopen /q/health/ready: the database check is there with no code, just from adding the extension.</p>
+            </aside>
+        </section>
+
+        <!-- Demo: testing -->
+        <section class="dark" data-background-color="#205894">
+            <div class="demo-heading">
+                <p class="demo-tag">{ live coding }</p>
+                <h2>Testing</h2>
+            </div>
+            <aside class="notes">
+                <p>Arquillian in February, @QuarkusTest and continuous testing now.</p>
+                <p>
+                    First, in a second terminal, start the native build. The app code is done, so it builds while we
+                    write tests:
+                </p>
+<pre><code class="nohighlight">./mvnw package -Dnative -Dquarkus.native.container-build=true -DskipTests</code></pre>
+                <p>Copy TaskRegistryIT over and rename it TaskRegistryTest.</p>
+            </aside>
+        </section>
+
+        <!-- Coming from a Jakarta EE container -->
+        <section>
+            <h2>Coming from a Jakarta EE Container</h2>
+            <table>
+                <thead>
+                <tr>
+                    <th>Jakarta EE container</th>
+                    <th>Quarkus</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                    <td>Jakarta REST, Persistence, Transactions</td>
+                    <td>The same APIs</td>
+                </tr>
+                <tr>
+                    <td>CDI Full</td>
+                    <td>CDI Lite, plus selected extras</td>
+                </tr>
+                <tr>
+                    <td>Deploy a WAR to a server</td>
+                    <td>Run the application</td>
+                </tr>
+                <tr>
+                    <td>The server ships the whole platform</td>
+                    <td>You add only the extensions you use</td>
+                </tr>
+                <tr>
+                    <td>Scanning and wiring at deployment</td>
+                    <td>Scanning and wiring at build time</td>
+                </tr>
+                <tr>
+                    <td>Data source in server configuration</td>
+                    <td><code>application.properties</code>, or Dev Services</td>
+                </tr>
+                <tr>
+                    <td>Redeploy</td>
+                    <td>Live reload in dev mode</td>
+                </tr>
+                <tr>
+                    <td>Arquillian</td>
+                    <td><code>@QuarkusTest</code></td>
+                </tr>
+                </tbody>
+            </table>
+            <aside class="notes">
+                <p>A recap of what the demos just showed.</p>
+                <p>Dev Services: dev and test only; in production you configure the real service.</p>
+            </aside>
+        </section>
+
+        <section>
+            <h2>What Doesn&apos;t Carry Over</h2>
+            <ul>
+                <li>CDI Full features such as portable extensions</li>
+                <li>The contents of <code>beans.xml</code></li>
+                <li>JNDI lookups</li>
+                <li>Changing settings at runtime</li>
+            </ul>
+            <!-- From https://quarkus.io/guides/cdi-reference and https://quarkus.io/guides/hibernate-orm -->
+            <aside class="notes">
+                <p>
+                    beans.xml still marks a bean archive, but its content is ignored, so alternatives are selected
+                    with @Priority.
+                </p>
+                <ul>
+                    <li>Use Build Compatible Extensions instead of CDI portable extensions</li>
+                    <li>
+                        Some properties are baked in at build time, for example database config. Setting them when you
+                        start the app is ignored with a warning; you have to rebuild. The config tables in each guide
+                        mark these with a lock icon.
+                    </li>
+                </ul>
+            </aside>
+        </section>
+
+        <!-- Quarkus Data / Jakarta Data -->
+        <section>
+            <h2>Now That You&rsquo;re Here: Jakarta Data</h2>
+            <h3>Plain JPA</h3>
+            <pre><code class="language-java" data-trim>
+@Inject
+private EntityManager em;
+
+public Collection&lt;Task&gt; getTasks(final boolean completed) {
+    return em.createNamedQuery("findCompleted", Task.class)
+            .setParameter("completed", completed)
+            .getResultList();
+}
+
+public Task getTaskById(final long id) {
+    return em.find(Task.class, id);
+}
+            </code></pre>
+            <h3>Jakarta Data, with Quarkus Data Hibernate</h3>
+            <pre><code class="language-java" data-trim>
+@Repository
+public interface TaskRepository {
+
+    @Query("where completed = :completed order by priority, added, summary")
+    List&lt;Task&gt; getTasks(boolean completed);
+
+    @Find
+    Optional&lt;Task&gt; getTaskById(Long id);
+}
+            </code></pre>
+            <p class="small">Experimental since Quarkus 3.37, ships in Quarkus 4.0. Panache is still supported.</p>
+            <!-- Source: quarkus.io/blog/introducing-quarkus-data (2026-06-15) and the quarkus-data-hibernate guide. -->
+            <aside class="notes">
+                <ul>
+                    <li>
+                        The standard Jakarta EE 11 repository: an interface, implementation generated at compile time,
+                        queries type-checked against the entity. The Task entity doesn't change.
+                    </li>
+                    <li>
+                        Story: Quarkus created Panache because there was no standard repository pattern. Jakarta Data
+                        standardized it, so Quarkus rebuilt on the spec. Quarkus Data is the new entry point; Panache 1
+                        stays supported, but new investment goes to Quarkus Data.
+                    </li>
+                    <li>
+                        Add it with: quarkus ext add quarkus-data-hibernate (it needs the annotation processor
+                        configured, see the guide).
+                    </li>
+                </ul>
+            </aside>
+        </section>
+
+        <!-- Expectations -->
+        <section>
+            <h2>What to Expect</h2>
+            <div class="two-column">
+                <div>
+                    <h3>What you get</h3>
+                    <ul>
+                        <li>APIs you already know</li>
+                        <li>Fast feedback: dev mode, Dev Services, continuous testing</li>
+                        <li>Fast startup and low memory usage</li>
+                        <li>An active, open community</li>
+                    </ul>
+                </div>
+                <div>
+                    <h3>What you don&rsquo;t</h3>
+                    <ul>
+                        <li>A fix for technical debt</li>
+                        <li>A one-button migration</li>
+                        <li>Every library working in native mode</li>
+                    </ul>
+                </div>
+            </div>
+            <aside class="notes">
+                <p>
+                    Native mode: third-party libraries that rely on reflection, dynamic class loading or runtime code
+                    generation need extra configuration, and some don't work at all. Libraries with a Quarkus extension
+                    are handled for you. Even then a class can slip through: my JSON-B adapter needed @Singleton to work
+                    in native.
+                </p>
+            </aside>
+        </section>
+
+        <!-- Using Spring -->
+        <section>
+            <h2>Using Spring?</h2>
+            <h3>Spring compatibility extensions</h3>
+            <ul>
+                <li>Spring DI, Spring Web, Spring Data JPA, Spring Boot properties, and more</li>
+                <li>Your Spring annotations, mapped to CDI and Jakarta REST at build time</li>
+                <li>A subset of the APIs, not Spring itself</li>
+            </ul>
+            <h3>Compare for yourself</h3>
+            <ul>
+                <li>
+                    The same app in Spring Boot and Quarkus:
+                    <a href="https://github.com/quarkusio/spring-quarkus-perf-comparison">spring-quarkus-perf-comparison</a>
+                </li>
+            </ul>
+            <p class="small">
+                <a href="https://quarkus.io/guides/#q=spring">quarkus.io/guides</a>, search for &ldquo;spring&rdquo;
+            </p>
+            <aside class="notes">
+                <p>
+                    I'm not a Spring expert. These are where I'd start, and I'd like to hear your
+                    take. What would you need to try it?
+                </p>
+                <p>
+                    Extensions: https://quarkus.io/extensions/?search-regex=Spring
+                    <br/>
+                    Guides: https://quarkus.io/guides/#q=spring
+                </p>
+                <p>
+                    The comparison repo is maintained by the Quarkus team, with scripts to run it yourself. I booted
+                    both versions and Quarkus started faster on my laptop.
+                </p>
+            </aside>
+        </section>
+
+        <!-- Thank You -->
+        <section class="dark" data-background-color="#0D1C2C">
+            <h2>Thank You</h2>
+            <div class="author-info">
+                <p><strong>James R. Perkins</strong></p>
+                <p><a href="https://quarkus.io">quarkus.io</a></p>
+                <p><a href="https://github.com/jamezp/talks">github.com/jamezp/talks</a></p>
+            </div>
+            <div class="author-info">
+                <p class="text-blue"><strong>Try it yourself</strong></p>
+                <p>Start a project: <a href="https://code.quarkus.io">code.quarkus.io</a></p>
+                <p>Guides: <a href="https://quarkus.io/guides/">quarkus.io/guides</a></p>
+                <p>Ask questions: <a href="https://quarkus.io/discussion/">quarkus.io/discussion</a></p>
+            </div>
+        </section>
+
+    </div>
+</div>
+
+<script src="lib/reveal.js/reveal.js"></script>
+<script src="lib/reveal.js/plugin/highlight.js"></script>
+<script src="lib/reveal.js/plugin/notes.js"></script>
+<script>
+    Reveal.initialize({
+        hash: true,
+        slideNumber: true,
+        transition: 'slide',
+        plugins: [RevealHighlight, RevealNotes]
+    });
+</script>
+</body>
+</html>
