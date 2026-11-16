@@ -1,8 +1,3 @@
-/*
- * Copyright The WildFly Authors
- * SPDX-License-Identifier: Apache-2.0
- */
-
 (() => {
     "use strict";
     let showCompleted = true;

@@ -1,7 +1,3 @@
-/*
- * Copyright The WildFly Authors
- * SPDX-License-Identifier: Apache-2.0
- */
 package org.wildfly.example;
 
 import jakarta.ws.rs.client.WebTarget;
