@@ -1,16 +1,11 @@
-/*
- * Copyright The WildFly Authors
- * SPDX-License-Identifier: Apache-2.0
- */
-
 package org.wildfly.example.data;
 
 import java.time.Instant;
 import java.util.Collection;
 
 import jakarta.enterprise.context.RequestScoped;
+import jakarta.inject.Inject;
 import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import jakarta.transaction.Transactional;
 import jakarta.validation.constraints.NotNull;
 
@@ -22,7 +17,7 @@ import org.wildfly.example.model.Task;
 @RequestScoped
 @Transactional
 public class TaskRegistry {
-    @PersistenceContext
+    @Inject
     private EntityManager em;
 
     /**

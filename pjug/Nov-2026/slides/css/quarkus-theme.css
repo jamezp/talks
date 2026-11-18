@@ -1,0 +1,176 @@
+/**
+ * Quarkus theme for reveal.js
+ *
+ * Colors come from the quarkus.io site's dark mode (_project-colors.scss and _colormode.scss). The body text is
+ * brighter than the site's #B5B5B5 so it reads on a TV in a lit room.
+ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;700;900&family=JetBrains+Mono:wght@400;700&display=swap');
+
+/*********************************************
+ * Branded colors
+ *********************************************/
+:root {
+    --quarkus-blue: #4695EB;
+    --quarkus-red: #FF004A;
+    --quarkus-dark: #0D1C2C;
+    --quarkus-section: #205894;
+    --quarkus-light-blue: #9BCAFA;
+    --quarkus-text: #E6E6E6;
+}
+
+/*********************************************
+ * Global Styles
+ *********************************************/
+
+.reveal-viewport {
+    background-color: var(--quarkus-dark);
+}
+
+.reveal {
+    font-family: 'Inter', sans-serif;
+    font-size: 28px;
+    font-weight: 400;
+    color: var(--quarkus-text);
+}
+
+.reveal .slides section {
+    text-align: left;
+}
+
+.reveal h1,
+.reveal h2,
+.reveal h3 {
+    font-weight: 700;
+    color: #FFFFFF;
+    margin-bottom: 0.6em;
+}
+
+.reveal h1 {
+    font-size: 2.4em;
+}
+
+.reveal h2 {
+    font-size: 1.6em;
+}
+
+.reveal h3 {
+    font-size: 1.2em;
+    color: var(--quarkus-blue);
+}
+
+.reveal a {
+    color: var(--quarkus-light-blue);
+    text-decoration: none;
+}
+
+.reveal a:hover {
+    color: var(--quarkus-red);
+}
+
+.reveal ul,
+.reveal ol {
+    margin-left: 1em;
+}
+
+.reveal li {
+    margin-bottom: 0.4em;
+}
+
+.reveal ul ul {
+    font-size: 0.85em;
+    margin-top: 0.3em;
+}
+
+.reveal code {
+    font-family: 'JetBrains Mono', monospace;
+}
+
+.reveal pre {
+    width: 100%;
+    font-size: 0.6em;
+    box-shadow: none;
+}
+
+.reveal pre code {
+    max-height: 520px;
+    border-radius: 6px;
+}
+
+.reveal table {
+    font-size: 0.75em;
+    margin: 0;
+    border-collapse: collapse;
+}
+
+.reveal table th {
+    color: #FFFFFF;
+    border-bottom: 2px solid var(--quarkus-blue);
+}
+
+.reveal table th,
+.reveal table td {
+    padding: 0.4em 1em 0.4em 0;
+}
+
+.reveal .slide-number {
+    background-color: transparent;
+    color: var(--quarkus-text);
+    font-size: 14px;
+}
+
+/*********************************************
+ * Title, section dividers, demo, thank you
+ *********************************************/
+
+.title-heading {
+    margin-top: 1.5em;
+}
+
+.title-subtitle {
+    color: var(--quarkus-light-blue);
+    font-size: 1.2em;
+    font-weight: 300;
+}
+
+.author-info {
+    margin-top: 2em;
+    font-size: 0.8em;
+    line-height: 1.4;
+}
+
+.author-info p {
+    margin: 0;
+}
+
+.demo-heading {
+    text-align: center;
+}
+
+.demo-heading .demo-tag {
+    color: var(--quarkus-light-blue);
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 0.7em;
+}
+
+/*********************************************
+ * Utilities
+ *********************************************/
+
+.text-blue {
+    color: var(--quarkus-blue);
+}
+
+.text-red {
+    color: var(--quarkus-red);
+}
+
+.two-column {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 40px;
+}
+
+.small {
+    font-size: 0.7em;
+}
